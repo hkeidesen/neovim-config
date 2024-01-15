@@ -162,19 +162,4 @@ return {
       opts.sections.lualine_c[1] = diagnostics
     end,
   },
-  {
-    "noice.nvim",
-    opts = {
-      cmdline = {
-        format = {
-          search_down = {
-            icon = ui_space.Search .. "",
-          },
-          search_up = {
-            icon = ui_space.Search .. "",
-          },
-        },
-      },
-    },
-  },
 }

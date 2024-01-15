@@ -58,3 +58,5 @@ require("lazy").setup({
     border = require("util.opts").float.border,
   },
 })
+
+require("vim-options")
