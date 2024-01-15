@@ -1,12 +1,39 @@
 return {
-		"nvim-neo-tree/neo-tree.nvim",
-		branch = "v3.x",
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			"nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
-			"MunifTanjim/nui.nvim",
-	},
-	config = function()
-		vim.keymap.set('n', '<C-n>', ':Neotree filesystem reveal left<CR>')
-	end
+  "nvim-neo-tree/neo-tree.nvim",
+  lazy = true,
+  cmd = "Neotree",
+  opts = {
+    filesystem = {
+      filtered_items = {
+        hide_dotfiles = false,
+        hide_by_name = {
+          ".git",
+        },
+        never_show = {
+          ".DS_Store",
+        },
+        always_show = {
+          ".env",
+        },
+      },
+    },
+    window = {
+      width = 35,
+      mappings = {
+        ["s"] = "",
+        ["S"] = "",
+        ["<C-x>"] = "",
+        ["<tab>"] = "open",
+        ["<C-s>"] = "open_split",
+        ["<C-v>"] = "open_vsplit",
+        ["<C-f>"] = "clear_filter",
+        ["g?"] = "show_help",
+        ["/"] = "", -- default search down
+        ["?"] = "", --default search above
+      },
+    },
+    nesting_rules = {
+      ["js"] = { "js.map" },
+    },
+  },
 }

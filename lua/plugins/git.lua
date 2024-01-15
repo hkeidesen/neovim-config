@@ -7,7 +7,7 @@ return {
 
   {
     "lewis6991/gitsigns.nvim",
---    lazy = true,
+    lazy = true,
     cmd = { "Gitsigns" },
     opts = {
       current_line_blame = true,
@@ -16,7 +16,7 @@ return {
 
   {
     "sindrets/diffview.nvim",
-  --  lazy = true,
+    lazy = true,
     cmd = {
       "DiffviewOpen",
       "DiffviewClose",
