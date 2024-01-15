@@ -1,16 +1,4 @@
 return {
-  -- colorscheme
-  {
-    "vitesse.nvim",
-    opts = {
-      -- transparent_background = false,
-      transparent_float_background = false,
-      telescope_border_follow_float_background = true,
-      lspsaga_border_follow_float_background = true,
-    },
-  },
-
-  -- editor
   {
     "gitsigns.nvim",
     opts = {
@@ -20,19 +8,4 @@ return {
     },
   },
 
-  -- dap
-  {
-    "overseer.nvim",
-    opts = {
-      form = {
-        border = "none",
-      },
-      confirm = {
-        border = "none",
-      },
-      task_win = {
-        border = "none",
-      },
-    },
-  },
 }

@@ -20,8 +20,7 @@ require("lazy").setup({
 
     -- ensure at last
     -- { import = "plugins.extras.ui.transparent" },
-    { import = "plugins.extras.ui.overlay" },
-    { import = "plugins.extras.ui.ide" },
+    -- { import = "plugins.extras.ui.overlay" },_q
     { import = "plugins.extras.vscode" },
     pcall(require, "private") and { import = "private" } or nil,
   },
@@ -34,7 +33,6 @@ require("lazy").setup({
     version = false, -- always use the latest git commit
     -- version = "*", -- try installing the latest stable version for plugins that support semver
   },
-  install = { colorscheme = { "vitesse" } },
   checker = { enabled = false }, -- automatically check for plugin updates
   change_detection = {
     notify = false,
@@ -54,9 +52,7 @@ require("lazy").setup({
       },
     },
   },
-  ui = {
-    border = require("util.opts").float.border,
-  },
+ 
 })
 
 require("vim-options")

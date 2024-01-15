@@ -167,28 +167,28 @@ M.plugins = {
       { "J", "[d", remap = true },
     },
   },
-  {
-    "neo-tree.nvim",
-    keys = {
-      { "<leader>fE", false },
-      { "<leader>E", false },
-      {
-        "<leader>fe",
-        function()
-          require("neo-tree.command").execute({ toggle = true, dir = vim.loop.cwd() })
-        end,
-        desc = "File Explorer",
-      },
-      { "<leader>e", "<leader>fe", remap = true, desc = "File Explorer" },
-      {
-        "<leader>fd",
-        function()
-          require("neo-tree.command").execute({ reveal = true, dir = vim.loop.cwd() })
-        end,
-        desc = "File Explorer reveal",
-      },
-    },
-  },
+  -- {
+  --   "neo-tree.nvim",
+  --   keys = {
+  --     { "<leader>fE", false },
+  --     { "<leader>E", false },
+  --     {
+  --       "<leader>fe",
+  --       function()
+  --         require("neo-tree.command").execute({ toggle = true, dir = vim.loop.cwd() })
+  --       end,
+  --       desc = "File Explorer",
+  --     },
+  --     { "<leader>e", "<leader>fe", remap = true, desc = "File Explorer" },
+  --     {
+  --       "<leader>fd",
+  --       function()
+  --         require("neo-tree.command").execute({ reveal = true, dir = vim.loop.cwd() })
+  --       end,
+  --       desc = "File Explorer reveal",
+  --     },
+  --   },
+  -- },
   {
     "telescope.nvim",
     keys = {

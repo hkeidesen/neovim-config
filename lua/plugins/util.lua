@@ -177,9 +177,9 @@ return {
         },
       },
       plugins = {
-        gitsigns = {
-          enabled = true, -- true to disable...
-        },
+        -- gitsigns = {
+        --   enabled = true, -- true to disable...
+        -- },
       },
     },
   },

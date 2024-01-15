@@ -59,12 +59,12 @@ return {
     },
   },
 
-  {
-    "LintaoAmons/easy-commands.nvim",
-    event = "VeryLazy",
-    opts = {},
-    dependencies = {
-      "NeogitOrg/neogit",
-    },
-  },
+  -- {
+  --   "LintaoAmons/easy-commands.nvim",
+  --   event = "VeryLazy",
+  --   opts = {},
+  --   dependencies = {
+  --     "NeogitOrg/neogit",
+  --   },
+  -- },
 }
