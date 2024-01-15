@@ -42,7 +42,7 @@ return {
 				return "\t\t\t" .. datetime .. "\t" .. greetingsTable[greetingIndex] .. ", " .. name
 			end
 
-			local userName = "Zicx"
+			local userName = "Hans-Kristian"
 			local greeting = getGreeting(userName)
 			dashboard.section.header.val = vim.split(logo .. "\n" .. greeting, "\n")
 			dashboard.section.buttons.val = {
