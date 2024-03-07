@@ -28,7 +28,8 @@ mason_lsp.setup({
         "lua_ls",
         "prismals",
         "tailwindcss",
-        "tsserver"
+        "tsserver",
+        "volar"
     },
     -- Whether servers that are set up (via lspconfig) should be automatically installed if they're not already installed.
     -- This setting has no relation with the `ensure_installed` setting.
@@ -130,6 +131,53 @@ require("mason-lspconfig").setup_handlers {
 
 
     ["volar"] = function()
+        local capabilities = vim.lsp.protocol.make_client_capabilities()
+        capabilities = require('cmp_nvim_lsp').default_capabilities()
+    
+        -- Enable semantic tokens
+        capabilities.textDocument.semanticTokens = {
+            dynamicRegistration = false,
+            tokenTypes = {
+                "namespace",
+                "type",
+                "class",
+                "enum",
+                "interface",
+                "struct",
+                "typeParameter",
+                "parameter",
+                "variable",
+                "property",
+                "enumMember",
+                "event",
+                "function",
+                "method",
+                "macro",
+                "keyword",
+                "modifier",
+                "comment",
+                "string",
+                "number",
+                "regexp",
+                "operator"
+            },
+            tokenModifiers = {
+                "declaration",
+                "definition",
+                "readonly",
+                "static",
+                "deprecated",
+                "abstract",
+                "async",
+                "modification",
+                "documentation",
+                "defaultLibrary"
+            },
+            formats = {
+                "relative"
+            }
+        }
+    
         volar.setup(on_attach, capabilities, handlers)
     end
 }

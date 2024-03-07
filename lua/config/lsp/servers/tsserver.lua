@@ -10,7 +10,13 @@ local on_attach = function(client, bufnr)
 
 	-- client.server_capabilities.documentFormattingProvider = false
 	-- client.server_capabilities.documentRangeFormattingProvider = false
-
+	for _, lsp in pairs(vim.lsp.buf_get_clients(bufnr)) do
+        if lsp.name == 'volar' then
+            -- Volar is already attached, so return immediately to prevent tsserver from attaching
+            return
+        end
+    end
+	
 	local function buf_set_option(...)
 		vim.api.nvim_buf_set_option(bufnr, ...)
 	end

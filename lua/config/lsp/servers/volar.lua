@@ -7,17 +7,19 @@ local function get_typescript_server_path(root_dir)
     return project_root and (util.path.join(project_root, 'node_modules', 'typescript', 'lib')) or ''
 end
 
+
 local volar_init_options = {
     typescript = {
         tsdk = '',
     },
 }
 
+
 local M = {}
 
 M.default_config = {
     cmd = { 'vue-language-server', '--stdio' },
-    filetypes = { 'vue' },
+    filetypes = { 'vue', 'typescript', 'javascript' }, -- Add 'typescript' and 'javascript' here
     root_dir = util.root_pattern('package.json'),
     init_options = volar_init_options,
     on_new_config = function(new_config, new_root_dir)
