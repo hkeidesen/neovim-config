@@ -2,8 +2,6 @@
 local mason_ok, mason = pcall(require, "mason")
 local mason_lsp_ok, mason_lsp = pcall(require, "mason-lspconfig")
 local ufo_config_handler = require("plugins.nvim-ufo").handler
-local volar = require('config.lsp.servers.volar')
-
 
 if not mason_ok or not mason_lsp_ok then
     return
@@ -29,15 +27,7 @@ mason_lsp.setup({
         "prismals",
         "tailwindcss",
         "tsserver",
-        "volar"
     },
-    -- Whether servers that are set up (via lspconfig) should be automatically installed if they're not already installed.
-    -- This setting has no relation with the `ensure_installed` setting.
-    -- Can either be:
-    --   - false: Servers are not automatically installed.
-    --   - true: All servers set up via lspconfig are automatically installed.
-    --   - { exclude: string[] }: All servers set up via lspconfig, except the ones provided in the list, are automatically installed.
-    --       Example: automatic_installation = { exclude = { "rust_analyzer", "solargraph" } }
     automatic_installation = { exclude = { "vuels" } },
 })
 
@@ -128,58 +118,6 @@ require("mason-lspconfig").setup_handlers {
             settings = require("config.lsp.servers.lua_ls").settings,
         })
     end,
-
-
-    ["volar"] = function()
-        local capabilities = vim.lsp.protocol.make_client_capabilities()
-        capabilities = require('cmp_nvim_lsp').default_capabilities()
-    
-        -- Enable semantic tokens
-        capabilities.textDocument.semanticTokens = {
-            dynamicRegistration = false,
-            tokenTypes = {
-                "namespace",
-                "type",
-                "class",
-                "enum",
-                "interface",
-                "struct",
-                "typeParameter",
-                "parameter",
-                "variable",
-                "property",
-                "enumMember",
-                "event",
-                "function",
-                "method",
-                "macro",
-                "keyword",
-                "modifier",
-                "comment",
-                "string",
-                "number",
-                "regexp",
-                "operator"
-            },
-            tokenModifiers = {
-                "declaration",
-                "definition",
-                "readonly",
-                "static",
-                "deprecated",
-                "abstract",
-                "async",
-                "modification",
-                "documentation",
-                "defaultLibrary"
-            },
-            formats = {
-                "relative"
-            }
-        }
-    
-        volar.setup(on_attach, capabilities, handlers)
-    end
 }
 
 
