@@ -3,13 +3,13 @@ return {
   -- │ Themes                                                  │
   -- ╰─────────────────────────────────────────────────────────╯
   {
-    "folke/tokyonight.nvim",
+    "catppuccin/nvim",
     lazy = false,
     priority = 1000,
     config = function()
       -- load the colorscheme here
-      vim.cmd([[colorscheme tokyonight]])
-      require("config.colorscheme")
+      vim.cmd.colorscheme "catppuccin"
+      require("plugins.catppuccin")
     end,
   },
   { "nvim-lua/plenary.nvim" },
