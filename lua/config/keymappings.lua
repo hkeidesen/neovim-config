@@ -1,6 +1,6 @@
 local keymap = vim.keymap.set
 local silent = { silent = true }
-local builtin = require('telescope.builtin')
+local telescope = require("telescope.builtin")
 
 table.unpack = table.unpack or unpack -- 5.1 compatibility
 
@@ -32,15 +32,42 @@ keymap("v", "<A-`>", "U", silent)
 keymap("n", "<C-s>", ":w<CR>", silent)
 keymap("i", "<C-s>", "<ESC> :w<CR>", silent)
 
+local function get_visual_selection()
+	local start_pos = vim.fn.getpos("'<")
+	local end_pos = vim.fn.getpos("'>")
+
+	local start_line, start_col = start_pos[2] - 1, start_pos[3] - 1
+	local end_line, end_col = end_pos[2] - 1, end_pos[3]
+  
+	if start_line == end_line then
+		return vim.fn.getline(start_line):sub(start_col, end_col)
+	else
+		local lines = vim.fn.getline(start_line, end_line)
+		lines[1] = lines[1]:sub(start_col)
+		lines[#lines] = lines[#lines]:sub(1, end_col)
+		return table.concat(lines, "\n")
+	end
+end
+
 -- Telescope
 keymap("n", "<C-p>", "<CMD>lua require('plugins.telescope').project_files()<CR>")
 keymap("n", "<S-p>", "<CMD>lua require('plugins.telescope.pickers.multi-rg')()<CR>")
 keymap("n", "?", function()
-	builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
+	telescope.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
 		winblend = 0,
 		previewer = false,
 	}))
-end, { desc = "[/] Fuzzily search in current buffer" })
+end, { desc = "[/] fuzzily search in current buffer" })
+
+-- Visual mode fuzzy search
+vim.keymap.set("v", "?", function()
+	local selection = get_visual_selection()
+	telescope.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
+		winblend = 0,
+		previewer = false,
+		default_text = selection,
+	}))
+end, { desc = "[/] fuzzily search in current buffer with selection" })
 
 -- Remove highlights
 keymap("n", "<CR>", ":noh<CR><CR>", silent)
