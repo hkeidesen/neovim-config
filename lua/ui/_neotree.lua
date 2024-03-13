@@ -7,7 +7,7 @@ return {
 	},
 	keys = {
 		-- open file tree witvh <leader> p
-		{ "<leader>pv", ":Neotree reveal toggle<cr>", silent = true }
+		{ "<C-e>", ":Neotree reveal toggle<cr>", silent = true }
 	},
 	branch = "v3.x",
 	config = function()

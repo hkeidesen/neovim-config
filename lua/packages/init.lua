@@ -10,6 +10,8 @@ return require("lazy").setup({
 		require("ui._catppuccin"),
 		-- startup screen
 		require("ui._alpha"),
+		-- telescope
+		require("packages.telescope"),
 	}),
 	_load.on_insert_enter({
 		-- show colors next to color values

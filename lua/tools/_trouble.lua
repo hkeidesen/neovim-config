@@ -46,13 +46,13 @@ return {
 		{ "gr", "<cmd>TroubleToggle lsp_references<cr>" },
 		{ "gd", "<cmd>TroubleToggle lsp_definitions<cr>" },
 		{
-			"<C-p>",
+			"<leader>d",
 			function()
 				next_diagnostic_or_trouble(false)
 			end
 		},
 		{
-			"<C-n>",
+			"<leader>n",
 			function()
 				next_diagnostic_or_trouble(true)
 			end

@@ -16,7 +16,7 @@ vim.api.nvim_set_keymap('n', 'q:', ':', { noremap = true, silent = true })
 Set.encoding = "UTF-8"
 
 -- tabs are two spaces wide
-Set.tabstop = 2
+Set.tabstop = 4
 
 -- disable netrw
 vim.g.loaded_netrwPlugin = 1
