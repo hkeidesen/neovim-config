@@ -1,15 +1,11 @@
-require('config.EcoVim')
+-- don't load anything if nvim is started for v****e extensions
+-- or when opening a huge file
+if require("utils").is_huge_file() or vim.g.vscode then
+	return
+end
 
-require('utils.globals')
-require('utils.functions')
-
-require('config.options')
-require('config.lazy')
-require('config.keymappings')
-require('config.autocmds')
-require('config.lsp.config')
-require('config.lsp.setup')
-require('config.lsp.functions')
-
-require('internal.winbar')
-require('internal.cursorword')
+-- load modules with configuration
+require("basics")
+require("keybindings")
+require("appearance")
+require("packages")
