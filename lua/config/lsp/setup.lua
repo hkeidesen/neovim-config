@@ -3,9 +3,16 @@ local mason_ok, mason = pcall(require, "mason")
 local mason_lsp_ok, mason_lsp = pcall(require, "mason-lspconfig")
 local ufo_config_handler = require("plugins.nvim-ufo").handler
 
+
+
 if not mason_ok or not mason_lsp_ok then
+    print('Could not load mason or mason-lspconfig')
     return
 end
+
+local lspconfig = require("lspconfig")
+local neodev = require("neodev")
+neodev.setup({})
 
 mason.setup({
     ui = {
@@ -60,12 +67,23 @@ require("mason-lspconfig").setup_handlers {
     -- The first entry (without a key) will be the default handler
     -- and will be called for each installed server that doesn't have
     -- a dedicated handler.
+    -- ensure_installed = {"volar", "tsserver"}
+
     function(server_name)
-        require("lspconfig")[server_name].setup {
-            on_attach = on_attach,
-            capabilities = capabilities,
-            handlers = handlers,
-        }
+        local server_config = {}
+
+        -- Check if tsserver should be disabled
+        if require("neoconf").get(server_name .. ".disable") then
+            return
+        end
+
+        -- Add TypeScript to the filetypes for volar
+        if server_name == "volar" then
+            server_config.filetypes = { 'vue', 'typescript', 'javascript' }
+        end
+
+        -- Setup the server
+        lspconfig[server_name].setup(server_config)
     end,
 
     ["tsserver"] = function()
@@ -120,7 +138,9 @@ require("mason-lspconfig").setup_handlers {
     end,
 }
 
-
+-- Ensure Volar and tsserver are installed
+-- mason_lspconfig.setup({
+-- })
 
 require("ufo").setup({
     fold_virt_text_handler = ufo_config_handler,

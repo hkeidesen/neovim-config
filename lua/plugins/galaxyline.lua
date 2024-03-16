@@ -3,12 +3,62 @@
 local gl = require('galaxyline')
 local condition = require('galaxyline.condition')
 local utils = require('utils')
--- local colors = require("catppuccin.palettes").get_palette "frappe"
+local colors = {
+  -- Example Catppuccin colors (you may need to adjust to exact color codes)
+  bg            = '#1E1E2E', -- Background color
+  fg            = '#CDD6F4', -- Foreground color
+  red           = '#F28FAD', -- Red
+  green         = '#ABE9B3', -- Green
+  yellow        = '#FAE3B0', -- Yellow
+  blue          = '#96CDFB', -- Blue
+  magenta       = '#DDB6F2', -- Magenta
+  cyan          = '#89DCEB', -- Cyan
+  white         = '#D9E0EE', -- White
+  black         = '#1E1E2E', -- Black (same as background)
+  gray          = '#45475A', -- Gray
+  darkgray      = '#313244', -- Dark gray
+  lightred      = '#F28FAD', -- Light red
+  lightgreen    = '#ABE9B3', -- Light green
+  lightyellow   = '#FAE3B0', -- Light yellow
+  lightblue     = '#96CDFB', -- Light blue
+  lightmagenta  = '#DDB6F2', -- Light magenta
+  lightcyan     = '#89DCEB', -- Light cyan
+  lightwhite    = '#D9E0EE', -- Light white
+  modetext      = '#000000',
+  giticon       = '#FF8800',
+  gitbg         = '#5C2C2E',
+  gittext       = '#C5C5C5',
+  diagerror     = '#F44747',
+  diagwarn      = '#FF8800',
+  diaghint      = '#4FC1FF',
+  diaginfo      = '#FFCC66',
+  lspicon       = '#68AF00',
+  lspbg         = '#304B2E',
+  lsptext       = '#C5C5C5',
+  typeicon      = '#FF8800',
+  typebg        = '#5C2C2E',
+  typetext      = '#C5C5C5',
+  statsicon     = '#9CDCFE',
+  statsbg       = '#5080A0',
+  statstext     = '#000000',
+  lineokfg      = '#000000',
+  lineokbg      = '#5080A0',
+  linelongerrorfg = '#FF0000',
+  linelongwarnfg  = '#FFFF00',
+  linelongbg    = '#5080A0',
+  shortbg       = '#DCDCAA',
+  shorttext     = '#000000',
+  shortrightbg  = '#3F3F3F',
+  shortrighttext = '#7C4C4E',
+  gpsbg         = '#5C00A3',
+  gpstext       = '#C5C5C5',
+}
+
 local package_info_present, package = pcall(require, 'package-info')
 
 -- Configuration {{{1
 
--- Functions {{{2
+-- Functions
 local function u(code)
   if type(code) == 'string' then
     code = tonumber('0x' .. code)
@@ -122,36 +172,39 @@ local colors = {
 }
 
 local mode_map = {
-  ['n']        = { '#569CD6', 'NORMAL' },
-  ['i']        = { '#D16969', 'INSERT' },
-  ['R']        = { '#D16969', 'REPLACE' },
-  ['c']        = { '#608B4E', 'COMMAND' },
-  ['v']        = { '#C586C0', 'VISUAL' },
-  ['V']        = { '#C586C0', 'VIS-LN' },
-  ['']        = { '#C586C0', 'VIS-BLK' },
-  ['s']        = { '#FF8800', 'SELECT' },
-  ['S']        = { '#FF8800', 'SEL-LN' },
-  ['']        = { '#DCDCAA', 'SEL-BLK' },
-  ['t']        = { '#569CD6', 'TERMINAL' },
-  ['Rv']       = { '#D16D69', 'VIR-REP' },
-  ['rm']       = { '#FF0000', '- More -' },
-  ['r']        = { '#FF0000', "- Hit-Enter -" },
-  ['r?']       = { '#FF0000', "- Confirm -" },
-  ['cv']       = { '#569CD6', "Vim Ex Mode" },
-  ['ce']       = { '#569CD6', "Normal Ex Mode" },
-  ['!']        = { '#569CD6', "Shell Running" },
-  ['ic']       = { '#DCDCAA', 'Insert mode completion |compl-generic|' },
-  ['no']       = { '#DCDCAA', 'Operator-pending' },
-  ['nov']      = { '#DCDCAA', 'Operator-pending (forced charwise |o_v|)' },
-  ['noV']      = { '#DCDCAA', 'Operator-pending (forced linewise |o_V|)' },
-  ['noCTRL-V'] = { '#DCDCAA', 'Operator-pending (forced blockwise |o_CTRL-V|) CTRL-V is one character' },
-  ['niI']      = { '#DCDCAA', 'Normal using |i_CTRL-O| in |Insert-mode|' },
-  ['niR']      = { '#DCDCAA', 'Normal using |i_CTRL-O| in |Replace-mode|' },
-  ['niV']      = { '#DCDCAA', 'Normal using |i_CTRL-O| in |Virtual-Replace-mode|' },
-  ['ix']       = { '#DCDCAA', 'Insert mode |i_CTRL-X| completion' },
-  ['Rc']       = { '#DCDCAA', 'Replace mode completion |compl-generic|' },
-  ['Rx']       = { '#DCDCAA', 'Replace mode |i_CTRL-X| completion' },
+  ['n']        = { colors.blue, 'NORMAL' },
+  ['i']        = { colors.green, 'INSERT' },
+  ['R']        = { colors.red, 'REPLACE' },
+  ['c']        = { colors.magenta, 'COMMAND' },
+  ['v']        = { colors.cyan, 'VISUAL' },
+  ['V']        = { colors.lightblue, 'VIS-LN' },
+  ['']        = { colors.lightcyan, 'VIS-BLK' },
+  ['s']        = { colors.orange, 'SELECT' },
+  ['S']        = { colors.lightorange, 'SEL-LN' },
+  ['']        = { colors.yellow, 'SEL-BLK' },
+  ['t']        = { colors.white, 'TERMINAL' },
+  ['Rv']       = { colors.darkgray, 'VIR-REP' },
+  ['rm']       = { colors.gray, '- More -' },
+  ['r']        = { colors.darkgray, '- Hit-Enter -' },
+  ['r?']       = { colors.gray, '- Confirm -' },
+  ['cv']       = { colors.yellow, 'Vim Ex Mode' },
+  ['ce']       = { colors.green, 'Normal Ex Mode' },
+  ['!']        = { colors.red, 'Shell Running' },
+  ['ic']       = { colors.yellow, 'Insert mode completion |compl-generic|' },
+  ['no']       = { colors.red, 'Operator-pending' },
+  ['nov']      = { colors.yellow, 'Operator-pending (forced charwise |o_v|)' },
+  ['noV']      = { colors.green, 'Operator-pending (forced linewise |o_V|)' },
+  ['noCTRL-V'] = { colors.blue, 'Operator-pending (forced blockwise |o_CTRL-V|) CTRL-V is one character' },
+  ['niI']      = { colors.magenta, 'Normal using |i_CTRL-O| in |Insert-mode|' },
+  ['niR']      = { colors.yellow, 'Normal using |i_CTRL-O| in |Replace-mode|' },
+  ['niV']      = { colors.red, 'Normal using |i_CTRL-O| in |Virtual-Replace-mode|' },
+  ['ix']       = { colors.cyan, 'Insert mode |i_CTRL-X| completion' },
+  ['Rc']       = { colors.purple, 'Replace mode completion |compl-generic|' },
+  ['Rx']       = { colors.orange, 'Replace mode |i_CTRL-X| completion' },
 }
+
+-- Rest of your galaxyline configuration follows
+
 
 -- See: https://www.nerdfonts.com/cheat-sheet
 local icons = {
