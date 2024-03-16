@@ -135,17 +135,8 @@ return {
   -- ╭─────────────────────────────────────────────────────────╮
   -- │ LSP Cmp                                                 │
   -- ╰─────────────────────────────────────────────────────────╯
-  {
-    "neoclide/coc.nvim",
-    event = "BufEnter",
-    branch = "master",
-    build = "yarn install --frozen-lockfile",
-    config = function()
-      require("plugins.coc").setup({
-    })
-
-    end,
-  },
+  { "folke/neodev.nvim", opts = {} },
+  { "folke/neoconf.nvim", opts = {}},
   {
     "hrsh7th/nvim-cmp",
     event = "InsertEnter",
