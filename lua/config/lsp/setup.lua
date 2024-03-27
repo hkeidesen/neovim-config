@@ -79,7 +79,7 @@ require("mason-lspconfig").setup_handlers {
 
         -- Add TypeScript to the filetypes for volar
         if server_name == "volar" then
-            server_config.filetypes = { 'vue', 'typescript', 'javascript' }
+            server_config.filetypes = { 'vue', 'javascript' }
         end
 
         -- Setup the server
