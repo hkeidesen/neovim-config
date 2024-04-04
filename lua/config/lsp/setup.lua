@@ -34,6 +34,7 @@ mason_lsp.setup({
         "prismals",
         "tailwindcss",
         "tsserver",
+        "volar"
     },
     automatic_installation = { exclude = { "vuels" } },
 })
@@ -118,6 +119,24 @@ require("mason-lspconfig").setup_handlers {
             settings = require("config.lsp.servers.eslint").settings,
         })
     end,
+    -- ["eslint"] = function()
+    --     -- lspconfig.eslint.setup({
+    --     --     capabilities = capabilities,
+    --     --     handlers = handlers,
+    --     --     on_attach = function(client, bufnr)
+    --     --         if vim.bo[bufnr].filetype == "vue" then
+    --     --             -- Disable eslint for Vue files
+    --     --         else
+    --     --             require("config.lsp.servers.eslint").on_attach(client, bufnr)
+    --     --         end
+    --     --     end,
+    --     --     settings = require("config.lsp.servers.eslint").settings,
+    --     -- })
+    -- end,
+
+    ["emmet_ls"] = function()
+        -- Disable emmet setup
+    end,
 
     ["jsonls"] = function()
         lspconfig.jsonls.setup({
@@ -137,10 +156,6 @@ require("mason-lspconfig").setup_handlers {
         })
     end,
 }
-
--- Ensure Volar and tsserver are installed
--- mason_lspconfig.setup({
--- })
 
 require("ufo").setup({
     fold_virt_text_handler = ufo_config_handler,
