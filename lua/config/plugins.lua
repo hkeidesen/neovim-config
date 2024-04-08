@@ -208,18 +208,18 @@ return {
         end,
         dependencies = "neovim/nvim-lspconfig",
     },
-    {
-        "pmizio/typescript-tools.nvim",
-        event = { "BufReadPre", "BufNewFile" },
-        ft = { "typescript", "typescriptreact" },
-        dependencies = {
-            "nvim-lua/plenary.nvim",
-            "neovim/nvim-lspconfig",
-        },
-        config = function()
-            require("plugins.typescript-tools")
-        end,
-    },
+    -- {
+    --     "pmizio/typescript-tools.nvim",
+    --     event = { "BufReadPre", "BufNewFile" },
+    --     ft = { "typescript", "typescriptreact" },
+    --     dependencies = {
+    --         "nvim-lua/plenary.nvim",
+    --         "neovim/nvim-lspconfig",
+    --     },
+    --     config = function()
+    --         require("plugins.typescript-tools")
+    --     end,
+    -- },
     {
         "axelvc/template-string.nvim",
         event = "InsertEnter",

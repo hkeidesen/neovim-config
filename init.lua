@@ -13,3 +13,13 @@ require('config.lsp.functions')
 
 require('internal.winbar')
 require('internal.cursorword')
+
+-- -- vue folding
+-- vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
+--     pattern = {"*.vue"},
+--     callback = function()
+--         -- Set Treesitter folding
+--         vim.wo.foldmethod = "expr"
+--         vim.wo.foldexpr = "nvim_treesitter#foldexpr()"
+--     end,
+-- })

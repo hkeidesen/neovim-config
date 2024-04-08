@@ -33,7 +33,6 @@ M.default_config = {
     end,
 }
 
--- You can add any additional setup, like on_attach, capabilities here
 M.setup = function(on_attach, capabilities, handler)
     M.default_config.on_attach = on_attach
     M.default_config.capabilities = capabilities

@@ -34,12 +34,31 @@ mason_lsp.setup({
         "prismals",
         "tailwindcss",
         "tsserver",
-        "volar"
+        "volar",
     },
     automatic_installation = { exclude = { "vuels" } },
 })
 
-local lspconfig = require("lspconfig")
+-- Setup for tsserver with vue/typescript-plugin
+local mason_registry = require('mason-registry')
+local vue_language_server_path = mason_registry.get_package('vue-language-server'):get_install_path() ..
+    '/node_modules/@vue/language-server'
+
+lspconfig.tsserver.setup {
+    init_options = {
+        plugins = {
+            {
+                name = '@vue/typescript-plugin',
+                location = vue_language_server_path,
+                languages = { 'vue' },
+            },
+        },
+    },
+    filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
+}
+
+lspconfig.volar.setup {}
+
 
 local handlers = {
     ["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {

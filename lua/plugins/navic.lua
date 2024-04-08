@@ -6,8 +6,10 @@ vim.api.nvim_set_hl(0, "NavicSeparator", { link = "Comment" })
 navic.setup {
     lsp = {
         auto_attach = true,
-        preference = nil,
-    },
+        preference = {
+            ["volar"] = 1,
+            ["tsserver"] = 2,
+        }, },
     highlight = true,
     separator = " " .. EcoVim.icons.caretRight .. " ",
     depth_limit = 0,
