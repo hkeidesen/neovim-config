@@ -102,7 +102,7 @@ vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
       vim.opt.foldtext = ""
 
       vim.opt.foldlevel = 99
-      vim.opt.foldlevelstart = 1
+      vim.opt.foldlevelstart = 99
       vim.opt.foldnestmax = 4
   end,
 })
