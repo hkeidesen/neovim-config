@@ -1,4 +1,12 @@
 return {
+    {
+        "max397574/better-escape.nvim",
+        lazy = false,
+        config = function()
+            require("plugins.better-escape")
+        end,
+
+    },
     -- ╭─────────────────────────────────────────────────────────╮
     -- │ Themes                                                  │
     -- ╰─────────────────────────────────────────────────────────╯
@@ -8,7 +16,7 @@ return {
         priority = 1000,
         config = function()
             -- load the colorscheme here
-            vim.cmd.colorscheme "catppuccin"
+            vim.cmd.colorscheme("catppuccin")
             require("plugins.catppuccin")
         end,
     },
@@ -61,8 +69,8 @@ return {
                 "<cmd>lua require('spectre').open_visual()<CR>",
                 mode = "v",
                 desc = "refactor",
-            }
-        }
+            },
+        },
     },
     {
         "nvim-telescope/telescope.nvim",
@@ -81,7 +89,7 @@ return {
         "kevinhwang91/nvim-bqf",
         ft = "qf",
         init = function()
-            require('plugins.bqf-init')
+            require("plugins.bqf-init")
         end,
     },
     {
@@ -156,8 +164,10 @@ return {
                 dependencies = "rafamadriz/friendly-snippets",
                 build = "make install_jsregexp",
                 config = function()
-                    require("luasnip.loaders.from_vscode").lazy_load { paths = { vim.fn.stdpath("config") .. "/snippets" } }
-                end
+                    require("luasnip.loaders.from_vscode").lazy_load({
+                        paths = { vim.fn.stdpath("config") .. "/snippets" },
+                    })
+                end,
             },
             {
                 cond = EcoVim.plugins.ai.tabnine.enabled,
@@ -258,7 +268,7 @@ return {
         },
         config = function()
             require("lsp-file-operations").setup()
-        end
+        end,
     },
     {
         "ThePrimeagen/refactoring.nvim",
@@ -276,7 +286,7 @@ return {
             { "<leader>rb", ":Refactor extract_block",         mode = "n",          desc = "Extract block" },
             { "<leader>rf", ":Refactor extract_block_to_file", mode = "n",          desc = "Extract block to file" },
         },
-        config = true
+        config = true,
     },
 
     -- ╭─────────────────────────────────────────────────────────╮
@@ -287,8 +297,8 @@ return {
         build = "make",
         cmd = "CodeSnapPreviewOn",
         opts = {
-            watermark = nil
-        }
+            watermark = nil,
+        },
     },
     { "AndrewRadev/switch.vim",     lazy = false },
     {
@@ -318,7 +328,7 @@ return {
         keys = {
             { "<leader>ac", "<cmd>lua require('comment-box').llbox()<CR>", desc = "comment box" },
             { "<leader>ac", "<cmd>lua require('comment-box').llbox()<CR>", mode = "v",          desc = "comment box" },
-        }
+        },
     },
     {
         "akinsho/nvim-toggleterm.lua",
@@ -328,8 +338,8 @@ return {
             require("plugins.toggleterm")
         end,
         keys = {
-            { "<Leader>at", "<cmd>ToggleTerm direction=float<CR>", desc = "terminal float" }
-        }
+            { "<Leader>at", "<cmd>ToggleTerm direction=float<CR>", desc = "terminal float" },
+        },
     },
     { "tpope/vim-repeat",           lazy = false },
     { "tpope/vim-speeddating",      lazy = false },
@@ -338,32 +348,32 @@ return {
         "smoka7/multicursors.nvim",
         event = "VeryLazy",
         dependencies = {
-            'nvim-treesitter/nvim-treesitter',
-            'smoka7/hydra.nvim',
+            "nvim-treesitter/nvim-treesitter",
+            "smoka7/hydra.nvim",
         },
         opts = {
             hint_config = {
                 border = EcoVim.ui.float.border or "rounded",
-                position = 'bottom',
+                position = "bottom",
                 show_name = false,
-            }
+            },
         },
         keys = {
             {
-                '<LEADER>m',
-                '<CMD>MCstart<CR>',
-                desc = 'multicursor',
+                "<LEADER>m",
+                "<CMD>MCstart<CR>",
+                desc = "multicursor",
             },
             {
-                '<LEADER>m',
-                '<CMD>MCvisual<CR>',
+                "<LEADER>m",
+                "<CMD>MCvisual<CR>",
                 mode = "v",
-                desc = 'multicursor',
+                desc = "multicursor",
             },
             {
-                '<C-Down>',
-                '<CMD>MCunderCursor<CR>',
-                desc = 'multicursor down',
+                "<C-Down>",
+                "<CMD>MCunderCursor<CR>",
+                desc = "multicursor down",
             },
         },
     },
@@ -401,11 +411,25 @@ return {
         opts = {
             char = {
                 keys = { "f", "F", "t", "T" },
-            }
+            },
         },
         keys = {
-            { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end,   desc = "Flash" },
-            { "r", mode = "o",               function() require("flash").remote() end, desc = "Remote Flash" },
+            {
+                "s",
+                mode = { "n", "x", "o" },
+                function()
+                    require("flash").jump()
+                end,
+                desc = "Flash",
+            },
+            {
+                "r",
+                mode = "o",
+                function()
+                    require("flash").remote()
+                end,
+                desc = "Remote Flash",
+            },
         },
     },
     {
@@ -471,7 +495,7 @@ return {
             { "<Leader>bsd", "<cmd>BufferLineSortByDirectory<CR>",         desc = "Sort by directory" },
             { "<Leader>bse", "<cmd>BufferLineSortByExtension<CR>",         desc = "Sort by extension" },
             { "<Leader>bsr", "<cmd>BufferLineSortByRelativeDirectory<CR>", desc = "Sort by relative dir" },
-        }
+        },
     },
     {
         "rcarriga/nvim-notify",
@@ -529,7 +553,7 @@ return {
         keys = {
             { "<Leader>ps", "<cmd>SessionManager available_commands<CR>",   desc = "session manager" },
             { "<Leader>pS", "<cmd>SessionManager save_current_session<CR>", desc = "save session" },
-        }
+        },
     },
     {
         "kylechui/nvim-surround",
@@ -634,10 +658,10 @@ return {
                 a = {
                     s = {
                         name = "Snippets",
-                        a = { '<cmd>lua require("scissors").addNewSnippet()<CR>', 'Add new snippet' },
-                        e = { '<cmd>lua require("scissors").editSnippet()<CR>', 'Edit snippet' },
-                    }
-                }
+                        a = { '<cmd>lua require("scissors").addNewSnippet()<CR>', "Add new snippet" },
+                        e = { '<cmd>lua require("scissors").editSnippet()<CR>', "Edit snippet" },
+                    },
+                },
             }, {
                 mode = "n",     -- NORMAL mode
                 prefix = "<leader>",
@@ -650,9 +674,9 @@ return {
                 a = {
                     s = {
                         name = "Snippets",
-                        a = { '<cmd>lua require("scissors").addNewSnippet()<CR>', 'Add new snippet from selection' },
-                    }
-                }
+                        a = { '<cmd>lua require("scissors").addNewSnippet()<CR>', "Add new snippet from selection" },
+                    },
+                },
             }, {
                 mode = "x",     -- VISUAL mode
                 prefix = "<leader>",
@@ -660,7 +684,7 @@ return {
                 noremap = true, -- use `noremap` when creating keymaps
                 nowait = false, -- use `nowait` when creating keymaps
             })
-        end
+        end,
     },
     {
         "windwp/nvim-autopairs",
@@ -694,14 +718,14 @@ return {
         },
         opts = {
             border = EcoVim.ui.float.border or "rounded", -- Valid window border style,
-            show_unknown_classes = true                   -- Shows the unknown classes popup
-        }
+            show_unknown_classes = true,                  -- Shows the unknown classes popup
+        },
     },
     {
         "laytan/tailwind-sorter.nvim",
         cmd = {
             "TailwindSort",
-            "TailwindSortOnSaveToggle"
+            "TailwindSortOnSaveToggle",
         },
         dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-lua/plenary.nvim" },
         build = "cd formatter && npm i && npm run build",
@@ -714,46 +738,44 @@ return {
         -- verify lazy loading functionality. On failure, disable lazy load and report issue
         -- lazy = false,
         config = function()
-            require("textcase").setup(
-                {
-                    -- Set `default_keymappings_enabled` to false if you don't want automatic keymappings to be registered.
-                    default_keymappings_enabled = true,
-                    -- `prefix` is only considered if `default_keymappings_enabled` is true. It configures the prefix
-                    -- of the keymappings, e.g. `gau ` executes the `current_word` method with `to_upper_case`
-                    -- and `gaou` executes the `operator` method with `to_upper_case`.
-                    prefix = "gu",
-                    -- If `substitude_command_name` is not nil, an additional command with the passed in name
-                    -- will be created that does the same thing as "Subs" does.
-                    substitude_command_name = nil,
-                    -- By default, all methods are enabled. If you set this option with some methods omitted,
-                    -- these methods will not be registered in the default keymappings. The methods will still
-                    -- be accessible when calling the exact lua function e.g.:
-                    -- "<CMD>lua require('textcase').current_word('to_snake_case')<CR>"
-                    enabled_methods = {
-                        "to_upper_case",
-                        "to_lower_case",
-                        "to_snake_case",
-                        "to_dash_case",
-                        "to_title_dash_case",
-                        "to_constant_case",
-                        "to_dot_case",
-                        "to_phrase_case",
-                        "to_camel_case",
-                        "to_pascal_case",
-                        "to_title_case",
-                        "to_path_case",
-                        "to_upper_phrase_case",
-                        "to_lower_phrase_case",
-                    },
-                }
-            )
+            require("textcase").setup({
+                -- Set `default_keymappings_enabled` to false if you don't want automatic keymappings to be registered.
+                default_keymappings_enabled = true,
+                -- `prefix` is only considered if `default_keymappings_enabled` is true. It configures the prefix
+                -- of the keymappings, e.g. `gau ` executes the `current_word` method with `to_upper_case`
+                -- and `gaou` executes the `operator` method with `to_upper_case`.
+                prefix = "gu",
+                -- If `substitude_command_name` is not nil, an additional command with the passed in name
+                -- will be created that does the same thing as "Subs" does.
+                substitude_command_name = nil,
+                -- By default, all methods are enabled. If you set this option with some methods omitted,
+                -- these methods will not be registered in the default keymappings. The methods will still
+                -- be accessible when calling the exact lua function e.g.:
+                -- "<CMD>lua require('textcase').current_word('to_snake_case')<CR>"
+                enabled_methods = {
+                    "to_upper_case",
+                    "to_lower_case",
+                    "to_snake_case",
+                    "to_dash_case",
+                    "to_title_dash_case",
+                    "to_constant_case",
+                    "to_dot_case",
+                    "to_phrase_case",
+                    "to_camel_case",
+                    "to_pascal_case",
+                    "to_title_case",
+                    "to_path_case",
+                    "to_upper_phrase_case",
+                    "to_lower_phrase_case",
+                },
+            })
             require("telescope").load_extension("textcase")
         end,
         cmd = { "TextCaseOpenTelescope", "Subs" },
-        keys = { "gu" }
+        keys = { "gu" },
     },
     {
-        'jsongerber/nvim-px-to-rem',
+        "jsongerber/nvim-px-to-rem",
         config = true,
     },
     -- ╭─────────────────────────────────────────────────────────╮
@@ -822,7 +844,7 @@ return {
                 "<cmd>CopilotChatFixDiagnostic<cr>", -- Get a fix for the diagnostic message under the cursor.
                 desc = "CopilotChat - Fix diagnostic",
             },
-        }
+        },
     },
 
     -- ╭─────────────────────────────────────────────────────────╮
@@ -844,7 +866,7 @@ return {
             { "<Leader>ghS", desc = "stage buffer" },
             { "<Leader>ght", desc = "toggle deleted" },
             { "<Leader>ghu", desc = "undo stage" },
-        }
+        },
     },
     {
         "sindrets/diffview.nvim",
@@ -856,7 +878,7 @@ return {
         end,
         keys = {
             { "<Leader>gd", "<cmd>lua require('plugins.git.diffview').toggle_file_history()<CR>", desc = "diff file" },
-            { "<Leader>gS", "<cmd>lua require('plugins.git.diffview').toggle_status()<CR>",       desc = "status" }
+            { "<Leader>gS", "<cmd>lua require('plugins.git.diffview').toggle_status()<CR>",       desc = "status" },
         },
     },
     {
@@ -866,12 +888,12 @@ return {
             require("plugins.git.conflict")
         end,
         keys = {
-            { "<Leader>gcb", '<cmd>GitConflictChooseBoth<CR>',   desc = 'choose both' },
-            { "<Leader>gcn", '<cmd>GitConflictNextConflict<CR>', desc = 'move to next conflict' },
-            { "<Leader>gcc", '<cmd>GitConflictChooseOurs<CR>',   desc = 'choose current' },
-            { "<Leader>gcp", '<cmd>GitConflictPrevConflict<CR>', desc = 'move to prev conflict' },
-            { "<Leader>gci", '<cmd>GitConflictChooseTheirs<CR>', desc = 'choose incoming' },
-        }
+            { "<Leader>gcb", "<cmd>GitConflictChooseBoth<CR>",   desc = "choose both" },
+            { "<Leader>gcn", "<cmd>GitConflictNextConflict<CR>", desc = "move to next conflict" },
+            { "<Leader>gcc", "<cmd>GitConflictChooseOurs<CR>",   desc = "choose current" },
+            { "<Leader>gcp", "<cmd>GitConflictPrevConflict<CR>", desc = "move to prev conflict" },
+            { "<Leader>gci", "<cmd>GitConflictChooseTheirs<CR>", desc = "choose incoming" },
+        },
     },
     {
         "ThePrimeagen/git-worktree.nvim",
@@ -881,8 +903,8 @@ return {
         end,
         keys = {
             { "<Leader>gww", desc = "worktrees" },
-            { "<Leader>gwc", desc = "create worktree" }
-        }
+            { "<Leader>gwc", desc = "create worktree" },
+        },
     },
     {
         "kdheepak/lazygit.nvim",
@@ -910,8 +932,8 @@ return {
             "Octo",
         },
         config = function()
-            require('plugins.git.octo')
-        end
+            require("plugins.git.octo")
+        end,
     },
 
     -- ╭─────────────────────────────────────────────────────────╮
@@ -992,7 +1014,7 @@ return {
         "stevearc/conform.nvim",
         event = { "BufReadPre", "BufNewFile" },
         config = function()
-            require('plugins.formatting')
+            require("plugins.formatting")
         end,
     },
     {
@@ -1002,7 +1024,7 @@ return {
             "BufNewFile",
         },
         config = function()
-            require('plugins.linting')
+            require("plugins.linting")
         end,
     },
 }

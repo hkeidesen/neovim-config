@@ -91,34 +91,31 @@ require("mason-lspconfig").setup_handlers {
 
     function(server_name)
         local server_config = {}
-
-        -- Check if tsserver should be disabled
-        if require("neoconf").get(server_name .. ".disable") then
-            return
-        end
-
-        -- Add TypeScript to the filetypes for volar
-        if server_name == "volar" then
-            server_config.filetypes = { 'vue', 'javascript' }
-        end
-
         -- Setup the server
         lspconfig[server_name].setup(server_config)
     end,
 
     ["tsserver"] = function()
-        -- Skip since we use typescript-tools.nvim
+        local mason_registry = require('mason-registry')
+        local vue_language_server_path = mason_registry.get_package('vue-language-server'):get_install_path() ..
+            '/node_modules/@vue/language-server'
+
+        lspconfig.tsserver.setup {
+            init_options = {
+                plugins = {
+                    {
+                        name = '@vue/typescript-plugin',
+                        location = vue_language_server_path,
+                        languages = { 'vue' },
+                    },
+                },
+            },
+            filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
+        }
     end,
 
     ["tailwindcss"] = function()
-        lspconfig.tailwindcss.setup({
-            capabilities = require("config.lsp.servers.tailwindcss").capabilities,
-            filetypes = require("config.lsp.servers.tailwindcss").filetypes,
-            handlers = handlers,
-            init_options = require("config.lsp.servers.tailwindcss").init_options,
-            on_attach = require("config.lsp.servers.tailwindcss").on_attach,
-            settings = require("config.lsp.servers.tailwindcss").settings,
-        })
+        -- disabled
     end,
 
     ["cssls"] = function()
@@ -131,27 +128,8 @@ require("mason-lspconfig").setup_handlers {
     end,
 
     ["eslint"] = function()
-        lspconfig.eslint.setup({
-            capabilities = capabilities,
-            handlers = handlers,
-            on_attach = require("config.lsp.servers.eslint").on_attach,
-            settings = require("config.lsp.servers.eslint").settings,
-        })
+        -- disabled
     end,
-    -- ["eslint"] = function()
-    --     -- lspconfig.eslint.setup({
-    --     --     capabilities = capabilities,
-    --     --     handlers = handlers,
-    --     --     on_attach = function(client, bufnr)
-    --     --         if vim.bo[bufnr].filetype == "vue" then
-    --     --             -- Disable eslint for Vue files
-    --     --         else
-    --     --             require("config.lsp.servers.eslint").on_attach(client, bufnr)
-    --     --         end
-    --     --     end,
-    --     --     settings = require("config.lsp.servers.eslint").settings,
-    --     -- })
-    -- end,
 
     ["emmet_ls"] = function()
         -- Disable emmet setup
@@ -178,5 +156,6 @@ require("mason-lspconfig").setup_handlers {
 
 require("ufo").setup({
     fold_virt_text_handler = ufo_config_handler,
-    close_fold_kinds = { "imports" },
+    -- auto fold all imoprts
+    -- close_fold_kinds_for_ft = { "imports" },
 })
