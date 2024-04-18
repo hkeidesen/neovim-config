@@ -1,6 +1,12 @@
 local lspkind = require("lspkind")
 local types = require("cmp.types")
 
+local snip_status_ok, luasnip = pcall(require, "luasnip")
+if not snip_status_ok then
+  P("Failed to load luasnip")
+  return
+end
+
 local _, tabnine = pcall(require, "cmp_tabnine.config")
 
 local cmp_status_ok, cmp = pcall(require, "cmp")
@@ -133,7 +139,8 @@ local buffer_option = {
     return vim.tbl_keys(bufs)
   end,
 }
-
+require("luasnip.loaders.from_vscode").lazy_load()
+require("luasnip.loaders.from_vscode").lazy_load({ paths = { vim.fn.stdpath("config") .. "/snippets" } })
 cmp.setup({
   snippet = {
     expand = function(args)

@@ -22,7 +22,7 @@ require 'nvim-treesitter.configs'.setup {
   highlight = {
     enable = true,
     -- disable = { "c", "rust" },  -- list of language that will be disabled
-    -- additional_vim_regex_highlighting = false,
+    additional_vim_regex_highlighting = false,
   },
 
   incremental_selection = {
@@ -91,3 +91,18 @@ require 'nvim-treesitter.configs'.setup {
   },
 
 }
+
+-- Set Treesitter folding
+vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
+  pattern = {"*.vue"},
+  callback = function()
+      vim.opt.foldcolumn = "0"
+      vim.opt.foldmethod = "expr"
+      vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+      vim.opt.foldtext = ""
+
+      vim.opt.foldlevel = 99
+      vim.opt.foldlevelstart = 99
+      vim.opt.foldnestmax = 4
+  end,
+})

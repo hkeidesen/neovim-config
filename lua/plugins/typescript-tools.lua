@@ -24,21 +24,21 @@ local handlers = {
   end,
 }
 
-require("typescript-tools").setup({
-  on_attach = function(client, bufnr)
-    if vim.fn.has("nvim-0.10") then
-      -- Enable inlay hints
-      vim.lsp.inlay_hint.enable(bufnr, true)
-    end
-  end,
-  handlers = handlers,
-  settings = {
-    separate_diagnostic_server = true,
-    code_lens = "off",
-    tsserver_file_preferences = {
-      includeInlayParameterNameHints = "all",
-      includeCompletionsForModuleExports = true,
-      quotePreference = "auto",
-    },
-  },
-})
+-- require("typescript-tools").setup({
+--   on_attach = function(client, bufnr)
+--     if vim.fn.has("nvim-0.10") then
+--       -- Enable inlay hints
+--       vim.lsp.inlay_hint.enable(bufnr, true)
+--     end
+--   end,
+--   handlers = handlers,
+--   settings = {
+--     separate_diagnostic_server = true,
+--     code_lens = "off",
+--     tsserver_file_preferences = {
+--       includeInlayParameterNameHints = "all",
+--       includeCompletionsForModuleExports = true,
+--       quotePreference = "auto",
+--     },
+--   },
+-- })
