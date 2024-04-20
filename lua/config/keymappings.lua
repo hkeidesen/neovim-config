@@ -33,40 +33,41 @@ keymap("n", "<C-s>", ":w<CR>", silent)
 keymap("i", "<C-s>", "<ESC> :w<CR>", silent)
 
 local function get_visual_selection()
-	local start_pos = vim.fn.getpos("'<")
-	local end_pos = vim.fn.getpos("'>")
+    local start_pos = vim.fn.getpos("'<")
+    local end_pos = vim.fn.getpos("'>")
 
-	local start_line, start_col = start_pos[2] - 1, start_pos[3] - 1
-	local end_line, end_col = end_pos[2] - 1, end_pos[3]
-  
-	if start_line == end_line then
-		return vim.fn.getline(start_line):sub(start_col, end_col)
-	else
-		local lines = vim.fn.getline(start_line, end_line)
-		lines[1] = lines[1]:sub(start_col)
-		lines[#lines] = lines[#lines]:sub(1, end_col)
-		return table.concat(lines, "\n")
-	end
+    local start_line, start_col = start_pos[2] - 1, start_pos[3] - 1
+    local end_line, end_col = end_pos[2] - 1, end_pos[3]
+
+    if start_line == end_line then
+        return vim.fn.getline(start_line):sub(start_col, end_col)
+    else
+        local lines = vim.fn.getline(start_line, end_line)
+        lines[1] = lines[1]:sub(start_col)
+        lines[#lines] = lines[#lines]:sub(1, end_col)
+        return table.concat(lines, "\n")
+    end
 end
 
 -- Telescope
 keymap("n", "<C-p>", "<CMD>lua require('plugins.telescope').project_files()<CR>")
 keymap("n", "<S-p>", "<CMD>lua require('plugins.telescope.pickers.multi-rg')()<CR>")
+
 keymap("n", "?", function()
-	telescope.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
-		winblend = 0,
-		previewer = false,
-	}))
-end, { desc = "[/] fuzzily search in current buffer" })
+    telescope.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
+        winblend = 0,
+        previewer = false,
+    }))
+end, { desc = "[?] fuzzily search in current buffer" })
 
 -- Visual mode fuzzy search
 vim.keymap.set("v", "?", function()
-	local selection = get_visual_selection()
-	telescope.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
-		winblend = 0,
-		previewer = false,
-		default_text = selection,
-	}))
+    local selection = get_visual_selection()
+    telescope.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
+        winblend = 0,
+        previewer = false,
+        default_text = selection,
+    }))
 end, { desc = "[/] fuzzily search in current buffer with selection" })
 
 -- Remove highlights
@@ -74,9 +75,9 @@ keymap("n", "<CR>", ":noh<CR><CR>", silent)
 
 -- Find word/file across project
 keymap(
-	"n",
-	"<Leader>pf",
-	"<CMD>lua require('plugins.telescope').project_files({ default_text = vim.fn.expand('<cword>'), initial_mode = 'normal' })<CR>"
+    "n",
+    "<Leader>pf",
+    "<CMD>lua require('plugins.telescope').project_files({ default_text = vim.fn.expand('<cword>'), initial_mode = 'normal' })<CR>"
 )
 keymap("n", "<Leader>pw", "<CMD>lua require('telescope.builtin').grep_string({ initial_mode = 'normal' })<CR>")
 
@@ -112,17 +113,17 @@ keymap("n", "<leader>q", "<cmd>lua require('utils').toggle_quicklist()<CR>", sil
 -- Manually invoke speeddating in case switch.vim didn't work
 keymap("n", "<C-a>", ":if !switch#Switch() <bar> call speeddating#increment(v:count1) <bar> endif<CR>", silent)
 keymap(
-	"n",
-	"<C-x>",
-	":if !switch#Switch({'reverse': 1}) <bar> call speeddating#increment(-v:count1) <bar> endif<CR>",
-	silent
+    "n",
+    "<C-x>",
+    ":if !switch#Switch({'reverse': 1}) <bar> call speeddating#increment(-v:count1) <bar> endif<CR>",
+    silent
 )
 
 -- Open links under cursor in browser with gx
 if vim.fn.has("macunix") == 1 then
-	keymap("n", "gx", "<cmd>silent execute '!open ' . shellescape('<cWORD>')<CR>", silent)
+    keymap("n", "gx", "<cmd>silent execute '!open ' . shellescape('<cWORD>')<CR>", silent)
 else
-	keymap("n", "gx", "<cmd>silent execute '!xdg-open ' . shellescape('<cWORD>')<CR>", silent)
+    keymap("n", "gx", "<cmd>silent execute '!xdg-open ' . shellescape('<cWORD>')<CR>", silent)
 end
 
 -- LSP
@@ -134,16 +135,16 @@ keymap("v", "<leader>ca", "<cmd>'<,'>lua vim.lsp.buf.code_action()<CR>", silent)
 keymap("n", "<leader>cr", "<cmd>lua vim.lsp.buf.rename()<CR>", silent)
 keymap("n", "<leader>cf", "<cmd>lua require('config.lsp.functions').format()<CR>", silent)
 keymap("v", "<leader>cf", function()
-	local start_row, _ = table.unpack(vim.api.nvim_buf_get_mark(0, "<"))
-	local end_row, _ = table.unpack(vim.api.nvim_buf_get_mark(0, ">"))
+    local start_row, _ = table.unpack(vim.api.nvim_buf_get_mark(0, "<"))
+    local end_row, _ = table.unpack(vim.api.nvim_buf_get_mark(0, ">"))
 
-	vim.lsp.buf.format({
-		range = {
-			["start"] = { start_row, 0 },
-			["end"] = { end_row, 0 },
-		},
-		async = true,
-	})
+    vim.lsp.buf.format({
+        range = {
+            ["start"] = { start_row, 0 },
+            ["end"] = { end_row, 0 },
+        },
+        async = true,
+    })
 end, silent)
 keymap("n", "<leader>cl", "<cmd>lua vim.diagnostic.open_float({ border = 'rounded', max_width = 100 })<CR>", silent)
 keymap("n", "gl", "<cmd>lua vim.diagnostic.open_float({ border = 'rounded', max_width = 100 })<CR>", silent)
@@ -151,8 +152,8 @@ keymap("n", "L", "<cmd>lua vim.lsp.buf.signature_help()<CR>", silent)
 keymap("n", "]g", "<cmd>lua vim.diagnostic.goto_next({ float = { border = 'rounded', max_width = 100 }})<CR>", silent)
 keymap("n", "[g", "<cmd>lua vim.diagnostic.goto_prev({ float = { border = 'rounded', max_width = 100 }})<CR>", silent)
 keymap("n", "K", function()
-	local winid = require("ufo").peekFoldedLinesUnderCursor()
-	if not winid then
-		vim.lsp.buf.hover()
-	end
+    local winid = require("ufo").peekFoldedLinesUnderCursor()
+    if not winid then
+        vim.lsp.buf.hover()
+    end
 end)
