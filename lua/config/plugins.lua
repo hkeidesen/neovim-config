@@ -144,7 +144,6 @@ return {
     -- │ LSP Cmp                                                 │
     -- ╰─────────────────────────────────────────────────────────╯
     { "folke/neodev.nvim",    opts = {} },
-    { "folke/neoconf.nvim",   opts = {} },
     {
         "hrsh7th/nvim-cmp",
         event = "InsertEnter",
@@ -164,9 +163,7 @@ return {
                 dependencies = "rafamadriz/friendly-snippets",
                 build = "make install_jsregexp",
                 config = function()
-                    require("luasnip.loaders.from_vscode").lazy_load({
-                        paths = { vim.fn.stdpath("config") .. "/snippets" },
-                    })
+                    require("plugins.luasnip")
                 end,
             },
             {
@@ -190,7 +187,6 @@ return {
             "petertriho/cmp-git",
         },
     },
-
     -- ╭─────────────────────────────────────────────────────────╮
     -- │ LSP Addons                                              │
     -- ╰─────────────────────────────────────────────────────────╯
@@ -441,12 +437,10 @@ return {
         end,
     },
     {
-        "ecosse3/galaxyline.nvim",
-        config = function()
-            require("plugins.galaxyline")
-        end,
-        event = "VeryLazy",
+        'nvim-lualine/lualine.nvim',
+        dependencies = { 'nvim-tree/nvim-web-devicons' }
     },
+
     {
         "echasnovski/mini.bufremove",
         version = "*",
@@ -1027,4 +1021,22 @@ return {
             require("plugins.linting")
         end,
     },
+    {
+        'gsuuon/note.nvim',
+        opts = {
+          -- Spaces are note roots. These directories should contain a `./notes` directory (will be made if not).
+          -- Defaults to { '~' }.
+          spaces = {
+            '~',
+            -- '~/projects/foo'
+          },
+    
+          -- Set keymap = false to disable keymapping
+          -- keymap = { 
+          --   prefix = '<leader>n'
+          -- }
+        },
+        cmd = 'Note',
+        ft = 'note'
+      }
 }

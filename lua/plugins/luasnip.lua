@@ -1,10 +1,6 @@
-{
-	"L3MON4D3/LuaSnip",
-	-- follow latest release.
-	version = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
-	-- install jsregexp (optional!).
-    build = "make install_jsregexp"
-    require("luasnip.loaders.from_vscode").lazy_load()
-    require("luasnip.loaders.from_vscode").lazy_load({ paths = { "/home/hk/.config/nvim/snippets" } })
-
+return{
+	require("luasnip.loaders.from_vscode").lazy_load({
+		paths = { vim.fn.stdpath("config") .. "/snippets" },
+	}),
+	print("Loading snippets from: " .. vim.fn.stdpath("config") .. "/snippets")
 }

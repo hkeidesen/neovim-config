@@ -53,7 +53,7 @@ local globals = {
   maplocalleader              = ';',        --- Map local leader key to comma
   speeddating_no_mappings     = 1,          --- Disable default mappings for speeddating
 }
-
+-- vim.opt.termguicolors = true
 vim.opt.shortmess:append('c');
 vim.opt.formatoptions:remove('c');
 vim.opt.formatoptions:remove('r');
