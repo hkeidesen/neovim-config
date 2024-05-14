@@ -57,7 +57,18 @@ lspconfig.tsserver.setup {
     filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
 }
 
-lspconfig.volar.setup {}
+lspconfig.volar.setup {
+    on_attach = function(client, bufnr)
+        -- other setup code
+        vim.diagnostic.config({
+            virtual_text = true,   -- Display diagnostics as inline text
+            signs = true,          -- Show signs in the sign column
+            underline = true,      -- Underline text where diagnostics occur
+            update_in_insert = false, -- Update diagnostics in insert mode
+        })
+    end,
+    -- additional setup options
+}
 
 
 local handlers = {
