@@ -26,8 +26,8 @@ return {
       { '<leader>fr', '<cmd>Telescope oldfiles<cr>', desc = 'Recent' },
       { '<leader>fR', Util.telescope('oldfiles', { cwd = vim.uv.cwd() }), desc = 'Recent (cwd)' },
       -- git
-      { '<leader>gc', '<cmd>Telescope git_commits<CR>', desc = 'commits' },
-      { '<leader>gs', '<cmd>Telescope git_status<CR>', desc = 'status' },
+      -- { '<leader>gc', '<cmd>Telescope git_commits<CR>', desc = 'commits' },
+      -- { '<leader>gs', '<cmd>Telescope git_status<CR>', desc = 'status' },
       -- search
       { '<leader>s"', '<cmd>Telescope registers<cr>', desc = 'Registers' },
       { '<leader>sc', '<cmd>Telescope command_history<cr>', desc = 'Command History' },
@@ -64,20 +64,20 @@ return {
       { '<leader>sw', Util.telescope('grep_string'), mode = 'v', desc = 'Selection (root dir)' },
       { '<leader>sW', Util.telescope('grep_string', { cwd = false }), mode = 'v', desc = 'Selection (cwd)' },
       { '<leader>uC', Util.telescope('colorscheme', { enable_preview = true }), desc = 'Colorscheme with preview' },
-      {
-        '<leader>ss',
-        function()
-          require('telescope.builtin').lsp_document_symbols()
-        end,
-        desc = 'Goto Symbol',
-      },
-      {
-        '<leader>sS',
-        function()
-          require('telescope.builtin').lsp_dynamic_workspace_symbols()
-        end,
-        desc = 'Goto Symbol (Workspace)',
-      },
+      -- {
+      --   '<leader>ss',
+      --   function()
+      --     require('telescope.builtin').lsp_document_symbols()
+      --   end,
+      --   desc = 'Goto Symbol',
+      -- },
+      -- {
+      --   '<leader>sS',
+      --   function()
+      --     require('telescope.builtin').lsp_dynamic_workspace_symbols()
+      --   end,
+      --   desc = 'Goto Symbol (Workspace)',
+      -- },
       { -- lazy style key map
         '<leader>su',
         '<cmd>Telescope undo<cr>',
@@ -171,11 +171,6 @@ return {
       vim.api.nvim_create_user_command('LiveGrepGitRoot', live_grep_git_root, {})
 
       vim.keymap.set('n', '<leader>fg', telescope.extensions.live_grep_args.live_grep_args, { desc = 'Live grep args' })
-      -- To make telescope work with rest.nvim
-      -- fd is required to be installed
-      -- i have to link it via ln -s $(which fdfind) /usr/bin/fd
-      -- as ubuntu 'fd' is taken in apt
-      vim.keymap.set('n', '<leader>re', telescope.extensions.rest.select_env, { desc = '[R]eplace [E]nv' })
     end,
   },
   {
@@ -193,6 +188,14 @@ return {
     config = function()
       Util.on_load('telescope.nvim', function()
         require('telescope').load_extension('live_grep_args')
+      end)
+    end,
+  },
+  {
+    'crispgm/telescope-heading.nvim',
+    config = function()
+      Util.on_load('telescope.nvim', function()
+        require('telescope').load_extension('heading')
       end)
     end,
   },

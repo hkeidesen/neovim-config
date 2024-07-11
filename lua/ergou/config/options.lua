@@ -54,6 +54,7 @@ opt.virtualedit = 'block' -- Allow cursor to move where there is no text in visu
 opt.wildmode = 'longest:full,full' -- Command-line completion mode
 opt.winminwidth = 5 -- Minimum window width
 opt.wrap = false -- Disable line wrap
+opt.linebreak = true -- Wrap lines at convenient points
 opt.fillchars = {
   foldopen = '',
   foldclose = '',
@@ -79,3 +80,12 @@ opt.foldenable = true
 
 -- Fix markdown indentation settings
 vim.g.markdown_recommended_style = 0
+
+-- Set filetype to `bigfile` for files larger than 1.5 MB
+-- Only vim syntax will be enabled (with the correct filetype)
+-- LSP, treesitter and other ft plugins will be disabled.
+-- mini.animate will also be disabled.
+vim.g.bigfile_size = 1024 * 1024 * 1.5 -- 1.5 MB
+
+-- Disable deprecation messages
+-- vim.deprecate = function() end

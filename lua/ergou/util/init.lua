@@ -1,6 +1,19 @@
 local LazyUtil = require('lazy.core.util')
 
----@class ErgouUtilModule
+---@class ergou.util: LazyUtilCore
+---@field public bufferline ergou.util.bufferline
+---@field public icons ergou.util.icons
+---@field public inject ergou.util.inject
+---@field public lazy ergou.util.lazy
+---@field public lsp ergou.util.lsp
+---@field public neotree ergou.util.neotree
+---@field public root ergou.util.root
+---@field public snips ergou.util.snips
+---@field public telescope ergou.util.telescope
+---@field public ui ergou.util.ui
+---@field public git ergou.util.git
+---@field public cmp ergou.util.cmp
+---@field public tsformat ergou.util.tsformat
 local M = {}
 
 setmetatable(M, {
@@ -17,9 +30,22 @@ function M.is_win()
   return vim.uv.os_uname().sysname:find('Windows') ~= nil
 end
 
+---@param name string
+function M.get_plugin(name)
+  return require('lazy.core.config').spec.plugins[name]
+end
+
+---@param name string
+---@param path string?
+function M.get_plugin_path(name, path)
+  local plugin = M.get_plugin(name)
+  path = path and '/' .. path or ''
+  return plugin and (plugin.dir .. path)
+end
+
 ---@param plugin string
 function M.has(plugin)
-  return require('lazy.core.config').spec.plugins[plugin] ~= nil
+  return M.get_plugin(plugin) ~= nil
 end
 
 ---@param fn fun()
@@ -34,7 +60,7 @@ end
 
 ---@param name string
 function M.opts(name)
-  local plugin = require('lazy.core.config').plugins[name]
+  local plugin = require('lazy.core.config').spec.plugins[name]
   if not plugin then
     return {}
   end
@@ -121,17 +147,13 @@ function M.table_walk(table, keys)
   return result
 end
 
-return M
+M.CREATE_UNDO = vim.api.nvim_replace_termcodes('<c-G>u', true, true, true)
+function M.create_undo()
+  if vim.api.nvim_get_mode().mode == 'i' then
+    vim.api.nvim_feedkeys(M.CREATE_UNDO, 'n', false)
+  end
+end
 
----@class ErgouUtilModule
----@field public bufferline ergou.util.bufferline
----@field public icons ergou.util.icons
----@field public inject ergou.util.inject
----@field public lazy ergou.util.lazy
----@field public lsp ergou.util.lsp
----@field public neotree ergou.util.neotree
----@field public root ergou.util.root
----@field public snips ergou.util.snips
----@field public telescope ergou.util.telescope
----@field public ui ergou.util.ui
----@field public git ergou.util.git
+M.sql_ft = { 'sql', 'mysql', 'plsql' }
+
+return M
