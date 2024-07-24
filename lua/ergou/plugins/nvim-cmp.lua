@@ -1,4 +1,3 @@
-local util = require('ergou.util')
 return {
   {
     'hrsh7th/nvim-cmp',
@@ -22,9 +21,8 @@ return {
 
       local luasnip = require('luasnip')
 
-      local ergou_util_cmp = require('ergou.util.cmp')
       local cmp_select_next_item = function(fallback)
-        if ergou_util_cmp.visible() then
+        if ergou.cmp.visible() then
           cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
         else
           fallback()
@@ -32,7 +30,7 @@ return {
       end
 
       local cmp_select_prev_item = function(fallback)
-        if ergou_util_cmp.visible() then
+        if ergou.cmp.visible() then
           cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select })
         else
           fallback()
@@ -57,8 +55,8 @@ return {
           ['<C-Space>'] = cmp.mapping.complete(), -- show completion suggestions
           ['<C-e>'] = cmp.mapping.abort(), -- close completion window
           ['<CR>'] = function(fallback)
-            if ergou_util_cmp.visible() then
-              util.create_undo()
+            if ergou.cmp.visible() then
+              ergou.create_undo()
               if cmp.confirm({ select = false }) then
                 return
               end
@@ -71,7 +69,7 @@ return {
               if copilot.is_visible() then
                 copilot.accept()
               end
-            elseif luasnip.expand_or_jump() then
+            elseif luasnip.expand_or_jumpable() then
               luasnip.expand_or_jump()
             else
               cmp_select_next_item(fallback)
@@ -90,7 +88,7 @@ return {
           { name = 'npm', keyword_length = 4 },
           {
             name = 'nvim_lsp',
-            entry_filter = ergou_util_cmp.cmp_lsp_entry_filter,
+            entry_filter = ergou.cmp.cmp_lsp_entry_filter,
           },
           { name = 'path' }, -- file system paths
           { name = 'luasnip' }, -- snippets
@@ -106,13 +104,13 @@ return {
           -- Keep the default formatting fields and expandable_indicator
           fields = { 'abbr', 'kind', 'menu' },
           expandable_indicator = true,
-          format = ergou_util_cmp.cmp_format,
+          format = ergou.cmp.cmp_format,
         },
-        sorting = ergou_util_cmp.cmp_sort(),
+        sorting = ergou.cmp.cmp_sort(),
       })
       cmp.event:on('confirm_done', function(event)
         if vim.tbl_contains(auto_brackets_fts, vim.bo.filetype) then
-          ergou_util_cmp.auto_brackets(event.entry)
+          ergou.cmp.auto_brackets(event.entry)
         end
       end)
 
@@ -126,7 +124,7 @@ return {
         local filetype = vim.bo.filetype
 
         if filetype == 'json' then
-          ergou_util_cmp.json_filename = ''
+          ergou.cmp.json_filename = ''
         end
 
         if filetype == 'vue' then
@@ -135,10 +133,16 @@ return {
         end
       end)
 
+      cmp.setup.filetype(ergou.sql_ft, {
+        sources = {
+          { name = 'vim-dadbod-completion' },
+        },
+      })
+
       local cmd_kepmap = {
         ['<C-j>'] = {
           c = function(fallback)
-            if ergou_util_cmp.visible() then
+            if ergou.cmp.visible() then
               cmp.select_next_item()
             else
               fallback()
@@ -147,7 +151,7 @@ return {
         },
         ['<C-k>'] = {
           c = function(fallback)
-            if ergou_util_cmp.visible() then
+            if ergou.cmp.visible() then
               cmp.select_prev_item()
             else
               fallback()

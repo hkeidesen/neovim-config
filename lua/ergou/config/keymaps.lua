@@ -22,17 +22,8 @@ map({ 'n', 'x' }, 'C', '"_C', { noremap = true, silent = true })
 map('n', '<leader>1', '*', { noremap = true, silent = true })
 map('n', '<leader>2', '#', { noremap = true, silent = true })
 
--- Add a new line from curso
+-- Add a new line from cursor (Not feel comfortable with this keybind)
 map('n', '<leader>K', 'i<CR><esc>', { noremap = true, silent = true, desc = 'Add a new line from cursor' })
-
--- LSP
-map("n", "<leader>cD", function()
-    vim.diagnostic.setloclist()
-    vim.cmd("lopen")
-end, { noremap = true, silent = true, desc = "File Diagnostics" })
-
-map('n', '<leader>cd', vim.diagnostic.open_float, { desc = 'Line Diagnostics' })
-
 
 -- exit visual mode
 map('v', '<leader><leader>', '<esc>', { noremap = true, silent = true })
@@ -50,11 +41,10 @@ map({ 'n', 'x' }, 'k', 'v:count == 0 ? \'gk\' : \'k\'', { expr = true, silent = 
 map({ 'n', 'x' }, '<Up>', 'v:count == 0 ? \'gk\' : \'k\'', { expr = true, silent = true })
 
 -- buffers
-map('n', '<S-l>', ':BufferLineCycleNext<CR>', { desc = 'Next buffer' })
-map('n', '<S-h>', ':BufferLineCyclePrev<CR>', { desc = 'Previous buffer' })
+map('n', '<S-h>', '<cmd>bprevious<cr>', { desc = 'Prev buffer' })
+map('n', '<S-l>', '<cmd>bnext<cr>', { desc = 'Next buffer' })
 map('n', '<leader>bb', '<cmd>e #<cr>', { desc = 'Switch to Other Buffer' })
 map('n', '<leader>`', '<cmd>e #<cr>', { desc = 'Switch to Other Buffer' })
-map("n", "<S-q>", ":lua require('mini.bufremove').delete(0, false)<CR>", { desc = "Delete current buffer" })
 
 -- https://github.com/mhinz/vim-galore#saner-behavior-of-n-and-n
 map('n', 'n', '\'Nn\'[v:searchforward].\'zv\'', { expr = true, desc = 'Next search result' })
@@ -79,11 +69,14 @@ map('n', '<leader>fn', '<cmd>enew<cr>', { desc = 'New File' })
 map('n', '<leader>xl', '<cmd>lopen<cr>', { desc = 'Location List' })
 map('n', '<leader>xq', '<cmd>copen<cr>', { desc = 'Quickfix List' })
 
-map('n', '[q', vim.cmd.cprev, { desc = 'Previous quickfix' })
-map('n', ']q', vim.cmd.cnext, { desc = 'Next quickfix' })
+-- set in trouble.lua
+-- map('n', '[q', vim.cmd.cprev, { desc = 'Previous quickfix' })
+-- map('n', ']q', vim.cmd.cnext, { desc = 'Next quickfix' })
 
 -- quit
 map('n', '<leader>qq', '<cmd>qa<cr>', { desc = 'Quit all' })
+
+map('n', '<leader>cd', vim.diagnostic.open_float, { desc = 'Line Diagnostics' })
 
 -- highlights under cursor
 map('n', '<leader>ui', vim.show_pos, { desc = 'Inspect Pos' })
@@ -100,27 +93,40 @@ map('n', '<leader>w=', '<C-W>=', { desc = 'Equal window height and width', remap
 map('n', '<leader>-', '<C-W>s', { desc = 'Split window below', remap = true })
 map('n', '<leader>|', '<C-W>v', { desc = 'Split window right', remap = true })
 
+--buffer
+map('n', '<leader>bd', require('ergou.util').bufferline.bufremove, { desc = 'Delete Buffer' })
+map('n', '<leader>bD', '<cmd>:bd<cr>', { desc = 'Delete Buffer and Window' })
 -- tabs
--- map('n', '<leader><tab>l', '<cmd>tablast<cr>', { desc = 'Last Tab' })
--- map('n', '<leader><tab>f', '<cmd>tabfirst<cr>', { desc = 'First Tab' })
--- map('n', '<leader><tab><tab>', '<cmd>tabnew<cr>', { desc = 'New Tab' })
--- map('n', '<leader><tab>]', '<cmd>tabnext<cr>', { desc = 'Next Tab' })
--- map('n', '<leader><tab>d', '<cmd>tabclose<cr>', { desc = 'Close Tab' })
--- map('n', '<leader><tab>[', '<cmd>tabprevious<cr>', { desc = 'Previous Tab' })
+map('n', '<leader><tab>l', '<cmd>tablast<cr>', { desc = 'Last Tab' })
+map('n', '<leader><tab>f', '<cmd>tabfirst<cr>', { desc = 'First Tab' })
+map('n', '<leader><tab>n', '<cmd>tabnew<cr>', { desc = 'New Tab' })
+map('n', '<leader><tab>]', '<cmd>tabnext<cr>', { desc = 'Next Tab' })
+map('n', '<leader><tab>d', '<cmd>tabclose<cr>', { desc = 'Close Tab' })
+map('n', '<leader><tab>[', '<cmd>tabprevious<cr>', { desc = 'Previous Tab' })
 
 -- Toggle Quickfix
 map('n', '<leader>qf', function()
-    local qf_exists = false
-    for _, win in pairs(vim.fn.getwininfo()) do
-        if win['quickfix'] == 1 then
-            qf_exists = true
-        end
+  local qf_exists = false
+  for _, win in pairs(vim.fn.getwininfo()) do
+    if win['quickfix'] == 1 then
+      qf_exists = true
     end
-    if qf_exists == true then
-        vim.cmd('cclose')
-        return
-    end
-    if not vim.tbl_isempty(vim.fn.getqflist()) then
-        vim.cmd('copen')
-    end
+  end
+  if qf_exists == true then
+    vim.cmd('cclose')
+    return
+  end
+  if not vim.tbl_isempty(vim.fn.getqflist()) then
+    vim.cmd('copen')
+  end
 end, { desc = 'Toggle Quickfix' })
+
+-- Toggle wrap or unwrap
+map('n', '<leader>tw', function()
+  if vim.wo.wrap then
+    vim.wo.wrap = false
+  else
+    vim.wo.wrap = true
+  end
+end, { desc = 'Toggle Wrap' })
+

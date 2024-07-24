@@ -1,19 +1,3 @@
-local function short_file_path()
-  local path = vim.fn.expand('%')  -- Get the relative path to the file
-  local segments = {}
-  for segment in string.gmatch(path, "[^/]+") do
-    table.insert(segments, segment)
-  end
-  local n = #segments
-  if n > 2 then
-    -- Show last two directories and the file name
-    return segments[n-2] .. '/' .. segments[n-1] .. '/' .. segments[n]
-  else
-    -- Just return the path (less than 3 segments)
-    return path
-  end
-end
-
 return {
   {
     'nvim-lualine/lualine.nvim',
@@ -21,6 +5,7 @@ return {
     opts = function()
       local icons = require('ergou.util.icons')
       local ui = require('ergou.util.ui')
+
       return {
         options = {
           theme = 'catppuccin',
@@ -29,9 +14,44 @@ return {
         },
         sections = {
           lualine_a = { 'mode' },
-          lualine_b = {'branch', 'diff', 'diagnostics'},
-          lualine_c = {{ short_file_path, icon = '' }},
+          lualine_b = {
+            'branch',
+            {
+              'diff',
+              symbols = {
+                added = icons.git.added,
+                modified = icons.git.modified,
+                removed = icons.git.removed,
+              },
+              source = function()
+                local gitsigns = vim.b.gitsigns_status_dict
+                if gitsigns then
+                  return {
+                    added = gitsigns.added,
+                    modified = gitsigns.changed,
+                    removed = gitsigns.removed,
+                  }
+                end
+              end,
+            },
+            -- {
+            --   'buffers',
+            --   symbols = icons.file.symbols,
+            -- },
+          },
+          lualine_c = {},
           lualine_x = {
+            {
+              function()
+                return require('tinygit.statusline').branchState()
+              end,
+            },
+            {
+              function()
+                return require('tinygit.statusline').blame()
+              end,
+              color = ui.fg('Tag'),
+            },
             {
               function()
                 return vim.t.maximized and icons.others.maximize or ''
@@ -80,6 +100,9 @@ return {
             },
             {
               'copilot',
+              cond = function()
+                return package.loaded['copilot.suggestion']
+              end,
             },
             'diagnostics',
           },

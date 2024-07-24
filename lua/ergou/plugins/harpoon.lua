@@ -1,6 +1,7 @@
 return {
   {
     'ThePrimeagen/harpoon',
+    enabled = true,
     branch = 'harpoon2',
     event = 'LazyFile',
     opts = {
@@ -21,7 +22,7 @@ return {
           desc = 'Harpoon File',
         },
         {
-          '<C-e>',
+          '<C-h>',
           function()
             local harpoon = require('harpoon')
             harpoon.ui:toggle_quick_menu(harpoon:list())
@@ -44,15 +45,15 @@ return {
         },
       }
 
-      for i = 1, 5 do
-        table.insert(keys, {
-          '<leader>h' .. i,
-          function()
-            require('harpoon'):list():select(i)
-          end,
-          desc = 'Harpoon to File ' .. i,
-        })
-      end
+      -- for i = 1, 5 do
+      --   table.insert(keys, {
+      --     '<leader>h' .. i,
+      --     function()
+      --       require('harpoon'):list():select(i)
+      --     end,
+      --     desc = 'Harpoon to File ' .. i,
+      --   })
+      -- end
       return keys
     end,
   },

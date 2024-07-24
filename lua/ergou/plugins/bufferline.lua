@@ -1,51 +1,48 @@
 local bufferline_util = require('ergou.util.bufferline')
-local icons = require('ergou.util.icons')
-
 return {
-    'akinsho/bufferline.nvim',
-    opts = {
-        options = {
-            close_command = function(n)
-                require('mini.bufremove').delete(n, false)
-            end,
-            right_mouse_command = function(n)
-                require('mini.bufremove').delete(n, false)
-            end,
-            diagnostics = 'nvim_lsp',
-            diagnostics_indicator = function(count, level, diagnostics_dict, context)
-                local s = ' '
-                for e, n in pairs(diagnostics_dict) do
-                    local sym = e == 'error' and icons.diagnostics.Error
-                        or (e == 'warning' and icons.diagnostics.Warn
-                            or (e == 'info' and icons.diagnostics.Info or icons.diagnostics.Hint))
-                    s = s .. n .. sym
-                end
-                return s
-            end,
-            separator_style = { "|", "|" },
-            always_show_bufferline = true,
-            offsets = {
-                {
-                    filetype = "NvimTree",
-                    text = "File Explorer",
-                    highlight = "EcovimNvimTreeTitle",
-                    text_align = "center",
-                    separator = true,
-                },
-            },
+  'akinsho/bufferline.nvim',
+  event = 'VeryLazy',
+  keys = {
+    { '<leader>bp', '<Cmd>BufferLineTogglePin<CR>', desc = 'Toggle pin' },
+    { '<leader>bP', '<Cmd>BufferLineGroupClose ungrouped<CR>', desc = 'Delete non-pinned buffers' },
+    { '<leader>bo', '<Cmd>BufferLineCloseOthers<CR>', desc = 'Delete other buffers' },
+    { '<leader>br', '<Cmd>BufferLineCloseRight<CR>', desc = 'Delete buffers to the right' },
+    { '<leader>bl', '<Cmd>BufferLineCloseLeft<CR>', desc = 'Delete buffers to the left' },
+    { '<S-h>', '<cmd>BufferLineCyclePrev<cr>', desc = 'Prev buffer' },
+    { '<S-l>', '<cmd>BufferLineCycleNext<cr>', desc = 'Next buffer' },
+  },
+  ---@class bufferline.UserConfig
+  opts = {
+    options = {
+      close_command = function(n)
+        ergou.bufferline.bufremove(n)
+      end,
+      right_mouse_command = function(n)
+        ergou.bufferline.bufremove(n)
+      end,
+      diagnostics = 'nvim_lsp',
+      diagnostics_indicator = bufferline_util.diagnostics_symbol,
+      separator_style = 'slant',
+      always_show_bufferline = false,
+      offsets = {
+        {
+          filetype = 'neo-tree',
+          text = 'Neo-tree',
+          highlight = 'Directory',
+          text_align = 'left',
         },
+      },
     },
-    --     config = function(_, opts)
-    --         require('bufferline').setup(opts)
-    --         vim.api.nvim_create_autocmd('BufAdd', {
-    --             callback = function()
-    --                 vim.schedule(function()
-    --                     local ok, _ = pcall(require('bufferline').refresh)
-    --                     if not ok then
-    --                         print("Bufferline refresh failed")
-    --                     end
-    --                 end)
-    --             end,
-    --         })
-    --     end,
+  },
+  config = function(_, opts)
+    require('bufferline').setup(opts)
+    -- Fix bufferline when restoring a session
+    vim.api.nvim_create_autocmd({ 'BufAdd', 'BufDelete' }, {
+      callback = function()
+        vim.schedule(function()
+          pcall(nvim_bufferline)
+        end)
+      end,
+    })
+  end,
 }

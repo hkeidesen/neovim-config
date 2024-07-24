@@ -1,4 +1,5 @@
 --- @class ergou.util.lsp
+--- @field TS_SERVER 'tsserver' | 'vtsls'
 local M = {}
 
 --- @type string[]
@@ -12,6 +13,66 @@ M.CSPELL_CONFIG_FILES = {
 
 M.PHP = {
   working_large_file = false,
+}
+
+M.TS_INLAY_HINTS = {
+  includeInlayEnumMemberValueHints = true,
+  includeInlayFunctionLikeReturnTypeHints = true,
+  includeInlayFunctionParameterTypeHints = true,
+  includeInlayParameterNameHints = 'all',
+  includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+  includeInlayPropertyDeclarationTypeHints = true,
+  includeInlayVariableTypeHints = true,
+}
+M.TS_FILETYPES = {
+  'javascript',
+  'javascriptreact',
+  'javascript.jsx',
+  'typescript',
+  'typescriptreact',
+  'typescript.tsx',
+  'vue',
+}
+M.TS_SERVER = 'vtsls'
+M.VTSLS_TYPESCRIPT_JAVASCRIPT_CONFIG = {
+  updateImportsOnFileMove = { enabled = 'always' },
+  suggest = {
+    completeFunctionCalls = true,
+  },
+  inlayHints = {
+    enumMemberValues = { enabled = true },
+    functionLikeReturnTypes = { enabled = true },
+    parameterNames = { enabled = 'literals' },
+    parameterTypes = { enabled = true },
+    propertyDeclarationTypes = { enabled = true },
+    variableTypes = { enabled = false },
+  },
+}
+M.TS_SERVER_HANDLERS = {
+  ['textDocument/publishDiagnostics'] = function(_, result, ctx, config)
+    if result.diagnostics == nil then
+      return
+    end
+
+    -- ignore some tsserver diagnostics
+    local idx = 1
+    while idx <= #result.diagnostics do
+      local entry = result.diagnostics[idx]
+
+      local formatter = ergou.tsformat[entry.code]
+      entry.message = formatter and formatter(entry.message) or entry.message
+
+      -- codes: https://github.com/microsoft/TypeScript/blob/main/src/compiler/diagnosticMessages.json
+      if entry.code == 80001 then
+        -- { message = "File is a CommonJS module; it may be converted to an ES module.", }
+        table.remove(result.diagnostics, idx)
+      else
+        idx = idx + 1
+      end
+    end
+
+    vim.lsp.diagnostic.on_publish_diagnostics(_, result, ctx, config)
+  end,
 }
 
 function M.get_clients(opts)
@@ -31,25 +92,60 @@ function M.get_clients(opts)
   return opts and opts.filter and vim.tbl_filter(opts.filter, ret) or ret
 end
 
+function M.rename_file()
+  local buf = vim.api.nvim_get_current_buf()
+  local old = assert(ergou.root.realpath(vim.api.nvim_buf_get_name(buf)))
+  local root = assert(ergou.root.realpath(ergou.root.get({ normalize = true })))
+  assert(old:find(root, 1, true) == 1, 'File not in project root')
+
+  local extra = old:sub(#root + 2)
+
+  vim.ui.input({
+    prompt = 'New File Name: ',
+    default = extra,
+    completion = 'file',
+  }, function(new)
+    if not new or new == '' or new == extra then
+      return
+    end
+    new = ergou.norm(root .. '/' .. new)
+    vim.fn.mkdir(vim.fs.dirname(new), 'p')
+    M.on_rename(old, new, function()
+      vim.fn.rename(old, new)
+      vim.cmd.edit(new)
+      vim.api.nvim_buf_delete(buf, { force = true })
+      vim.fn.delete(old)
+    end)
+  end)
+end
+
+---@from https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/util/lsp.lua
 ---@param from string
 ---@param to string
----@from https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/util/lsp.lua
-function M.on_rename(from, to)
+---@param rename? fun()
+function M.on_rename(from, to, rename)
+  local changes = { files = { {
+    oldUri = vim.uri_from_fname(from),
+    newUri = vim.uri_from_fname(to),
+  } } }
+
   local clients = M.get_clients()
   for _, client in ipairs(clients) do
     if client.supports_method('workspace/willRenameFiles') then
-      ---@diagnostic disable-next-line: invisible
-      local resp = client.request_sync('workspace/willRenameFiles', {
-        files = {
-          {
-            oldUri = vim.uri_from_fname(from),
-            newUri = vim.uri_from_fname(to),
-          },
-        },
-      }, 1000, 0)
+      local resp = client.request_sync('workspace/willRenameFiles', changes, 1000, 0)
       if resp and resp.result ~= nil then
         vim.lsp.util.apply_workspace_edit(resp.result, client.offset_encoding)
       end
+    end
+  end
+
+  if rename then
+    rename()
+  end
+
+  for _, client in ipairs(clients) do
+    if client.supports_method('workspace/didRenameFiles') then
+      client.notify('workspace/didRenameFiles', changes)
     end
   end
 end
@@ -69,7 +165,7 @@ function M.lsp_autocmd()
         local client_name = client.name
         local file_type = vim.bo[bufnr].filetype
         if
-          not (file_type == 'vue' and client_name == 'tsserver')
+          not (file_type == 'vue' and (client_name == 'tsserver' or client_name == 'vtsls'))
           and client.supports_method('textDocument/documentSymbol')
         then
           require('nvim-navic').attach(client, bufnr)
@@ -79,9 +175,49 @@ function M.lsp_autocmd()
         -- if client.supports_method('textDocument/inlayHint') then
         --   vim.lsp.inlay_hint.enable()
         -- end
+
+        -- Highlight references
+        local handler = vim.lsp.handlers['textDocument/documentHighlight']
+        vim.lsp.handlers['textDocument/documentHighlight'] = function(err, result, ctx, config)
+          if not vim.api.nvim_buf_is_loaded(ctx.bufnr) then
+            return
+          end
+          return handler(err, result, ctx, config)
+        end
+
+        -- lsp highlight references
+        if client.supports_method('textDocument/documentHighlight') then
+          vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI', 'CursorMoved', 'CursorMovedI' }, {
+            group = vim.api.nvim_create_augroup('lsp_word_' .. bufnr, { clear = true }),
+            buffer = bufnr,
+            callback = function(ev)
+              if not M.words.at() then
+                if ev.event:find('CursorMoved') then
+                  vim.lsp.buf.clear_references()
+                elseif not ergou.cmp.visible() then
+                  vim.lsp.buf.document_highlight()
+                end
+              end
+            end,
+          })
+          vim.keymap.set('n', ']]', function()
+            M.words.jump(vim.v.count1)
+          end, { buffer = bufnr, desc = 'Next reference' })
+          vim.keymap.set('n', '[[', function()
+            M.words.jump(-vim.v.count1)
+          end, { buffer = bufnr, desc = 'Previous reference' })
+        end
+
+        -- Rename file
+        if
+          client.supports_method('workspace/didRenameFiles') or client.supports_method('workspace/willRenameFiles')
+        then
+          nmap('<leader>cR', ergou.lsp.rename_file, 'Rename File')
+        end
       end
 
       nmap('<leader>rn', vim.lsp.buf.rename, 'Rename')
+      -- nmap('<leader>rn', ':IncRename ', 'Rename')
       nmap('<leader>ca', vim.lsp.buf.code_action, 'Code Action')
 
       -- map for toggle inlay hint
@@ -114,7 +250,23 @@ function M.lsp_autocmd()
 end
 
 M.get_servers = function()
+  -- Define vue plugin
   local mason_registry = require('mason-registry')
+  local has_volar, volar = pcall(mason_registry.get_package, 'vue-language-server')
+  local vue_ts_plugin_path = volar:get_install_path() .. '/node_modules/@vue/language-server'
+  local vue_plugin = {}
+  if has_volar then
+    vue_plugin = {
+      name = '@vue/typescript-plugin',
+      -- Maybe a function to get the location of the plugin is better?
+      -- e.g. pnpm fallback to nvm fallback to default node path
+      location = vue_ts_plugin_path,
+      languages = { 'vue' },
+      configNamespace = 'typescript',
+      enableForWorkspaceTypeScriptVersions = true,
+    }
+  end
+
   --- @type table<string, lspconfig.Config>
   local servers = {
     clangd = { cmd = {
@@ -123,47 +275,51 @@ M.get_servers = function()
     } },
     -- gopls = {},
     -- pyright = {},
-    rust_analyzer = {},
-    tsserver = {
-      -- taken from https://github.com/typescript-language-server/typescript-language-server#workspacedidchangeconfiguration
-      init_options = {
-        plugins = {},
-      },
-      filetypes = {
-        'javascript',
-        'javascriptreact',
-        'javascript.jsx',
-        'typescript',
-        'typescriptreact',
-        'typescript.tsx',
-        'vue',
-      },
+    -- rust_analyzer = {},
+    vtsls = {
+      handlers = M.TS_SERVER_HANDLERS,
+      enabled = M.TS_SERVER == 'vtsls',
+      filetypes = M.TS_FILETYPES,
       settings = {
-        javascript = {
-          inlayHints = {
-            includeInlayEnumMemberValueHints = true,
-            includeInlayFunctionLikeReturnTypeHints = true,
-            includeInlayFunctionParameterTypeHints = true,
-            includeInlayParameterNameHints = 'all',
-            includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-            includeInlayPropertyDeclarationTypeHints = true,
-            includeInlayVariableTypeHints = true,
+        complete_function_calls = true,
+        vtsls = {
+          enableMoveToFileCodeAction = true,
+          autoUseWorkspaceTsdk = true,
+          experimental = {
+            completion = {
+              enableServerSideFuzzyMatch = true,
+            },
+          },
+          tsserver = {
+            globalPlugins = {
+              vue_plugin,
+            },
           },
         },
+        typescript = M.VTSLS_TYPESCRIPT_JAVASCRIPT_CONFIG,
+        javascript = M.VTSLS_TYPESCRIPT_JAVASCRIPT_CONFIG,
+      },
+    },
+    tsserver = {
+      handlers = M.TS_SERVER_HANDLERS,
+      enabled = M.TS_SERVER == 'tsserver',
+      -- taken from https://github.com/typescript-language-server/typescript-language-server#workspacedidchangeconfiguration
+      init_options = {
+        plugins = {
+          vue_plugin,
+        },
+      },
+      filetypes = M.TS_FILETYPES,
+      settings = {
+        javascript = {
+          inlayHints = M.TS_INLAY_HINTS,
+        },
         typescript = {
-          inlayHints = {
-            includeInlayEnumMemberValueHints = true,
-            includeInlayFunctionLikeReturnTypeHints = true,
-            includeInlayFunctionParameterTypeHints = true,
-            includeInlayParameterNameHints = 'all',
-            includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-            includeInlayPropertyDeclarationTypeHints = true,
-            includeInlayVariableTypeHints = true,
-          },
+          inlayHints = M.TS_INLAY_HINTS,
         },
       },
     },
-    html = { filetypes = { 'html', 'twig', 'hbs' } },
+    html = { filetypes = { 'html', 'twig', 'hbs', 'blade' } },
     eslint = {
       filetypes = {
         'typescript',
@@ -201,6 +357,9 @@ M.get_servers = function()
     lua_ls = {
       settings = {
         Lua = {
+          diagnostics = {
+            globals = { 'vim', 'ergou' },
+          },
           workspace = { checkThirdParty = false },
           telemetry = { enable = false },
           window = {
@@ -217,14 +376,15 @@ M.get_servers = function()
           experimental = {
             classRegex = {
               '\\/\\*\\s*tw\\s*\\*\\/\\s*[`\'"](.*)[`\'"];?',
+              '@tw\\s\\*/\\s+["\'`]([^"\'`]*)',
               { '(?:twMerge|twJoin)\\(([^\\);]*)[\\);]', '[`\'"]([^\'"`,;]*)[`\'"]' },
               'twc\\`(.*)\\`;?',
-              'clsx[`]([\\s\\S][^`]*)[`]',
-              { 'clsx\\(([^)]*)\\)', '(?:\'|"|`)([^\']*)(?:\'|"|`)' },
-              'cva[`]([\\s\\S][^`]*)[`]',
-              { 'cva\\(([^)]*)\\)', '(?:\'|"|`)([^\']*)(?:\'|"|`)' },
+              '(?:clsx|cva|cn)[`]([\\s\\S][^`]*)[`]',
+              { '(?:clsx|cva|cn)\\(([^)]*)\\)', '(?:\'|"|`)([^\']*)(?:\'|"|`)' },
               { 'ui:\\s*{([^)]*)\\s*}', '["\'`]([^"\'`]*).*?["\'`]' },
               { '/\\*\\s?ui\\s?\\*/\\s*{([^;]*)}', ':\\s*["\'`]([^"\'`]*).*?["\'`]' },
+              'class\\s*:\\s*["\'`]([^"\'`]*)["\'`]',
+              { 'classList.(?:add|remove)\\(([^)]*)\\)', '(?:\'|"|`)([^"\'`]*)(?:\'|"|`)' },
             },
           },
           classAttributes = {
@@ -241,8 +401,22 @@ M.get_servers = function()
     unocss = {},
     theme_check = {},
     prismals = {},
-    jdtls = {},
-    emmet_language_server = {},
+    -- jdtls = {},
+    emmet_language_server = {
+      filetypes = {
+        'css',
+        'eruby',
+        'html',
+        'htmldjango',
+        'javascriptreact',
+        'less',
+        'pug',
+        'sass',
+        'scss',
+        'typescriptreact',
+        'blade',
+      },
+    },
     jsonls = {
       settings = {
         json = {
@@ -266,32 +440,50 @@ M.get_servers = function()
       },
     },
     cssls = {},
+    taplo = {},
   }
 
-  local has_volar, volar = pcall(mason_registry.get_package, 'vue-language-server')
-
-  -- If server `volar` and `tsserver` exists, add `@vue/typescript-plugin` to `tsserver`
-  if servers.volar ~= nil and servers.tsserver ~= nil and has_volar then
-    local tsserver = servers.tsserver or {} -- Ensure tsserver is initialized
-    tsserver.init_options = tsserver.init_options or {} -- Ensure init_options is initialized
-    tsserver.init_options.plugins = tsserver.init_options.plugins or {} -- Ensure plugins is initialized
-
-    local vue_ts_plugin_path = volar:get_install_path() .. '/node_modules/@vue/language-server'
-
-    local vue_plugin = {
-      name = '@vue/typescript-plugin',
-      -- Maybe a function to get the location of the plugin is better?
-      -- e.g. pnpm fallback to nvm fallback to default node path
-      location = vue_ts_plugin_path,
-      languages = { 'vue' },
-    }
-
-    -- Append the plugin to the `tsserver` server
-    vim.list_extend(tsserver.init_options.plugins, { vue_plugin })
-
-    servers.tsserver = tsserver
-  end
   return servers
 end
 
+---@alias LspWord {from:{[1]:number, [2]:number}, to:{[1]:number, [2]:number}, current?:boolean} 1-0 indexed
+M.words = {}
+M.words.ns = vim.api.nvim_create_namespace('vim_lsp_references')
+
+---@return LspWord[]
+function M.words.get()
+  local cursor = vim.api.nvim_win_get_cursor(0)
+  return vim.tbl_map(function(extmark)
+    local ret = {
+      from = { extmark[2] + 1, extmark[3] },
+      to = { extmark[4].end_row + 1, extmark[4].end_col },
+    }
+    if cursor[1] >= ret.from[1] and cursor[1] <= ret.to[1] and cursor[2] >= ret.from[2] and cursor[2] <= ret.to[2] then
+      ret.current = true
+    end
+    return ret
+  end, vim.api.nvim_buf_get_extmarks(0, M.words.ns, 0, -1, { details = true }))
+end
+
+---@param words? LspWord[]
+---@return LspWord?, number?
+function M.words.at(words)
+  for idx, word in ipairs(words or M.words.get()) do
+    if word.current then
+      return word, idx
+    end
+  end
+end
+
+function M.words.jump(count)
+  local words = M.words.get()
+  local _, idx = M.words.at(words)
+  if not idx then
+    return
+  end
+  local target = words[idx + count]
+  if target then
+    vim.api.nvim_win_set_cursor(0, target.from)
+  end
+end
 return M

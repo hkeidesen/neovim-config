@@ -3,7 +3,6 @@ local Util = require('ergou.util')
 return {
   {
     'nvim-neo-tree/neo-tree.nvim',
-    branch = 'v3.x',
     cmd = 'Neotree',
     keys = {
       {
@@ -65,15 +64,32 @@ return {
         bind_to_cwd = false,
         follow_current_file = { enabled = true },
         use_libuv_file_watcher = true,
-        commands = {
-          copy_file_name = function(state)
-            local node = state.tree:get_node()
-            vim.fn.setreg('*', node.name, 'c')
-          end,
+        filtered_items = {
+          hide_dotfiles = false,
+          hide_gitignored = true,
+          hide_by_name = { '.git' },
         },
       },
+      commands = {
+        copy_file_name = function(state)
+          local node = state.tree:get_node()
+          vim.fn.setreg('*', node.name, 'c')
+        end,
+        diff_files = Util.neotree.diff,
+      },
+
       window = {
         mappings = {
+          ['D'] = 'diff_files',
+          ['e'] = function()
+            require('neo-tree.command').execute({ toggle = true, dir = Util.root() })
+          end,
+          ['b'] = function()
+            require('neo-tree.command').execute({ source = 'buffers', toggle = true })
+          end,
+          ['g'] = function()
+            require('neo-tree.command').execute({ source = 'git_status', toggle = true })
+          end,
           ['<space>'] = 'none',
           ['o'] = { 'open' },
           ['oc'] = 'none',
@@ -83,7 +99,6 @@ return {
           ['on'] = 'none',
           ['os'] = 'none',
           ['ot'] = 'none',
-          ['e'] = 'none',
           ['Y'] = {
             Util.neotree.copy_selector,
             desc = 'copy path/filename to clipboard',
@@ -95,6 +110,8 @@ return {
           ['sn'] = { 'order_by_name', nowait = false },
           ['ss'] = { 'order_by_size', nowait = false },
           ['st'] = { 'order_by_type', nowait = false },
+          ['h'] = Util.neotree.left_movement,
+          ['l'] = Util.neotree.right_movement,
         },
       },
       default_component_configs = {
@@ -134,10 +151,10 @@ return {
     end,
   },
   {
+
     's1n7ax/nvim-window-picker',
     name = 'window-picker',
     event = 'VeryLazy',
-    version = '2.*',
     opts = { hint = 'floating-big-letter' },
   },
 }

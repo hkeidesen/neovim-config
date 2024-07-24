@@ -65,7 +65,6 @@ return {
   },
   {
     'echasnovski/mini.splitjoin',
-    version = '*',
     keys = {
       {
         'gS',
@@ -76,7 +75,6 @@ return {
   },
   {
     'echasnovski/mini.align',
-    version = '*',
     keys = {
       {
         'ga',
@@ -90,33 +88,30 @@ return {
     opts = {},
   },
   {
-    'echasnovski/mini.bufremove',
-    keys = {
-      {
-        '<leader>bd',
-        function()
-          local bd = require('mini.bufremove').delete
-          if vim.bo.modified then
-            local choice = vim.fn.confirm(('Save changes to %q?'):format(vim.fn.bufname()), '&Yes\n&No\n&Cancel')
-            if choice == 1 then -- Yes
-              vim.cmd.write()
-              bd(0)
-            elseif choice == 2 then -- No
-              bd(0, true)
-            end
-          else
-            bd(0)
-          end
-        end,
-        desc = 'Delete Buffer',
-      },
-      {
-        '<leader>bD',
-        function()
-          require('mini.bufremove').delete(0, true)
-        end,
-        desc = 'Delete Buffer (Force)',
-      },
-    },
+    'echasnovski/mini.hipatterns',
+    event = 'LazyFile',
+    opts = function()
+      local hi = require('mini.hipatterns')
+      return {
+        highlighters = {
+          hex_color = hi.gen_highlighter.hex_color({ priority = 2000 }),
+          shorthand = {
+            pattern = '()#%x%x%x()%f[^%x%w]',
+            group = function(_, _, data)
+              ---@type string
+              local match = data.full_match
+              local r, g, b = match:sub(2, 2), match:sub(3, 3), match:sub(4, 4)
+              local hex_color = '#' .. r .. r .. g .. g .. b .. b
+
+              return MiniHipatterns.compute_hex_color_group(hex_color, 'bg')
+            end,
+            extmark_opts = { priority = 2000 },
+          },
+        },
+      }
+    end,
+    config = function(_, opts)
+      require('mini.hipatterns').setup(opts)
+    end,
   },
 }

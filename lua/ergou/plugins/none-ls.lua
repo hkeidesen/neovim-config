@@ -12,7 +12,7 @@ return {
 
       local cspellConfig = {
         find_json = function()
-          for _, file in ipairs(util.lsp.CSPELL_CONFIG_FILES) do
+          for _, file in ipairs(util.lsp.cspell_config_files) do
             local dotfiles_path = os.getenv('DOTFILES')
             if dotfiles_path then
               local path = util.root.find_file(file, dotfiles_path .. '/cspell')

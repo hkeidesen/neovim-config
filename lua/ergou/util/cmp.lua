@@ -66,16 +66,11 @@ end
 ---@return vim.CompletedItem
 function M.cmp_format(entry, vim_item)
   local lspkind = require('lspkind')
-
-  local ergou_util_cmp = require('ergou.util.cmp')
-
-  local icons = require('ergou.util.icons')
-
   local item_with_kind = lspkind.cmp_format({
     maxwidth = 50,
     ellipsis_char = '...',
     preset = 'codicons',
-    symbol_map = { Npm = icons.others.npm },
+    symbol_map = { Npm = ergou.icons.others.npm },
     show_labelDetails = true,
     menu = {
       buffer = '[Buffer]',
@@ -88,7 +83,7 @@ function M.cmp_format(entry, vim_item)
   })(entry, vim_item)
 
   local filetype = vim.bo.filetype
-  if vim.tbl_contains(ergou_util_cmp.sql_ft, filetype) then
+  if vim.tbl_contains(ergou.sql_ft, filetype) then
     return item_with_kind
   end
 
