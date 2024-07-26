@@ -1,5 +1,5 @@
 --- @class ergou.util.lsp
---- @field TS_SERVER 'tsserver' | 'vtsls'
+--- @field TS_SERVER 'vtsls'
 local M = {}
 
 --- @type string[]
@@ -39,13 +39,13 @@ M.VTSLS_TYPESCRIPT_JAVASCRIPT_CONFIG = {
   suggest = {
     completeFunctionCalls = true,
   },
-  inlayHints = {
+   inlayHints = {
     enumMemberValues = { enabled = true },
-    functionLikeReturnTypes = { enabled = true },
+   -- functionLikeReturnTypes = { enabled = true },
     parameterNames = { enabled = 'literals' },
-    parameterTypes = { enabled = true },
-    propertyDeclarationTypes = { enabled = true },
-    variableTypes = { enabled = false },
+     parameterTypes = { enabled = true },
+     propertyDeclarationTypes = { enabled = true },
+     variableTypes = { enabled = false },
   },
 }
 M.TS_SERVER_HANDLERS = {
@@ -300,25 +300,25 @@ M.get_servers = function()
         javascript = M.VTSLS_TYPESCRIPT_JAVASCRIPT_CONFIG,
       },
     },
-    tsserver = {
-      handlers = M.TS_SERVER_HANDLERS,
-      enabled = M.TS_SERVER == 'tsserver',
-      -- taken from https://github.com/typescript-language-server/typescript-language-server#workspacedidchangeconfiguration
-      init_options = {
-        plugins = {
-          vue_plugin,
-        },
-      },
-      filetypes = M.TS_FILETYPES,
-      settings = {
-        javascript = {
-          inlayHints = M.TS_INLAY_HINTS,
-        },
-        typescript = {
-          inlayHints = M.TS_INLAY_HINTS,
-        },
-      },
-    },
+    -- tsserver = {
+    --   handlers = M.TS_SERVER_HANDLERS,
+    --   enabled = M.TS_SERVER == 'tsserver',
+    --   -- taken from https://github.com/typescript-language-server/typescript-language-server#workspacedidchangeconfiguration
+    --   init_options = {
+    --     plugins = {
+    --       vue_plugin,
+    --     },
+    --   },
+    --   filetypes = M.TS_FILETYPES,
+    --   settings = {
+    --     javascript = {
+    --       inlayHints = M.TS_INLAY_HINTS,
+    --     },
+    --     typescript = {
+    --       inlayHints = M.TS_INLAY_HINTS,
+    --     },
+    --   },
+    -- },
     html = { filetypes = { 'html', 'twig', 'hbs', 'blade' } },
     eslint = {
       filetypes = {
@@ -399,7 +399,7 @@ M.get_servers = function()
       },
     },
     unocss = {},
-    theme_check = {},
+    -- theme_check = {},
     prismals = {},
     -- jdtls = {},
     emmet_language_server = {

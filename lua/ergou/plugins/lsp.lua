@@ -59,14 +59,14 @@ return {
         opts = { attach_navic = false },
       },
       { 'b0o/schemastore.nvim' },
-      {
-        'github/copilot.vim',
-        config = function()
-          vim.g.copilot_filetypes = {
-            ["*"] = true
-          }
-        end,
-      },
+      -- {
+      --   'github/copilot.vim',
+      --   config = function()
+      --     vim.g.copilot_filetypes = {
+      --       ["*"] = true
+      --     }
+      --   end,
+      -- },
     },
     ---@class PluginLspOpts
     opts = {
